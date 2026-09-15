@@ -16,6 +16,8 @@ class MainActivity : Activity() {
     private var section = AppSection.LIBRARY
     private var miniPlayer: MiniPlayerBar? = null
     private var miniPlayerPalette: AppPalette? = null
+    /** Set while the document picker is open for a pairing rather than a library import. */
+    private var pairingBookId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,6 +112,8 @@ class MainActivity : Activity() {
                         onPlayLocal = { openBook(it, autoPlay = true) },
                         onSetHiddenLocal = ::setBookHidden,
                         onRemoveLocal = ::removeBook,
+                        onAddNarration = ::openNarrationPicker,
+                        onRemoveNarration = ::removeNarration,
                         onNavigate = ::showSection,
                         preferences = preferences,
                     ),
@@ -149,6 +153,15 @@ class MainActivity : Activity() {
         }, IMPORT_BOOK)
     }
 
+    private fun openNarrationPicker(book: LocalBook) {
+        pairingBookId = book.id
+        startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("audio/mpeg", "audio/mp4", "audio/x-m4b"))
+        }, REQUEST_NARRATION)
+    }
+
     @Deprecated("Activity result API requires an additional AndroidX dependency; this callback remains lifecycle-safe for this single picker.")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -157,6 +170,26 @@ class MainActivity : Activity() {
             if (result?.isSuccess == true) showLibrary()
             else showLibraryWithError(result?.exceptionOrNull()?.message ?: "No file was selected.")
         }
+        if (requestCode == REQUEST_NARRATION) {
+            val bookId = pairingBookId
+            pairingBookId = null
+            val uri = data?.data
+            if (resultCode != RESULT_OK || bookId == null || uri == null) return
+            repository.attachNarration(bookId, uri)
+                .onSuccess(::showNarrationMapping)
+                .onFailure { showLibraryWithError(it.message ?: "The narration could not be attached.") }
+        }
+    }
+
+    private fun removeNarration(book: LocalBook) {
+        repository.detachNarration(book.id)
+            .onSuccess { showLibrary() }
+            .onFailure { showLibraryWithError(it.message ?: "The narration could not be removed.") }
+    }
+
+    /** Stub until Task 7 adds the mapping review screen; for now just return to the library. */
+    private fun showNarrationMapping(attachment: NarrationAttachment) {
+        showLibrary()
     }
 
     private fun showLibraryWithError(message: String) {
@@ -171,6 +204,8 @@ class MainActivity : Activity() {
                 onPlayLocal = { openBook(it, autoPlay = true) },
                 onSetHiddenLocal = ::setBookHidden,
                 onRemoveLocal = ::removeBook,
+                onAddNarration = ::openNarrationPicker,
+                onRemoveNarration = ::removeNarration,
                 initialError = message,
                 onNavigate = ::showSection,
                 preferences = preferences,
@@ -291,6 +326,7 @@ class MainActivity : Activity() {
     companion object {
         private const val MATCH = android.widget.FrameLayout.LayoutParams.MATCH_PARENT
         private const val IMPORT_BOOK = 2001
+        private const val REQUEST_NARRATION = 4210
         internal const val EXTRA_OPEN_AUDIOBOOK_ID = "app.narratify.extra.OPEN_AUDIOBOOK_ID"
         private val AUDIO_FORMATS = setOf("MP3", "M4A", "M4B")
     }

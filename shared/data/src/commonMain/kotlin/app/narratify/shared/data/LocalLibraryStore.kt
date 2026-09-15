@@ -16,6 +16,7 @@ data class StoredLibraryBook(
     val progress: Int,
     val hidden: Boolean,
     val coverUri: String? = null,
+    val hasNarration: Boolean = false,
 )
 
 data class StoredTextPosition(
@@ -481,9 +482,9 @@ class LocalLibraryStore(private val database: NarratifyDatabase) {
         publication: com.narratify.data.db.Publication,
         hidden: Boolean,
     ): StoredLibraryBook? {
-        val file = database.filesQueries.selectFilesForPublication(publication.id)
+        val files = database.filesQueries.selectFilesForPublication(publication.id)
             .executeAsList()
-            .firstOrNull { it.role == ORIGINAL_FILE_ROLE }
+        val file = files.firstOrNull { it.role == ORIGINAL_FILE_ROLE }
             ?: return null
         return StoredLibraryBook(
             id = publication.id,
@@ -503,6 +504,7 @@ class LocalLibraryStore(private val database: NarratifyDatabase) {
                 ?.let(database.derivedArtifactsQueries::selectArtifactById)
                 ?.executeAsOneOrNull()
                 ?.storage_uri,
+            hasNarration = files.any { it.role == NARRATION_FILE_ROLE },
         )
     }
 }

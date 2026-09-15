@@ -4,6 +4,7 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.narratify.shared.data.db.NarratifyDatabase
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -134,5 +135,22 @@ class NarrationStoreTest {
         assertNull(store.narration(id))
         assertTrue(store.chapters(id).isEmpty())
         assertEquals("The Harbour", store.book(id)?.title)
+    }
+
+    @Test
+    fun `a book reports whether it has a narration`() {
+        val store = store()
+        val id = store.seedBook()
+        assertFalse(store.book(id)!!.hasNarration)
+        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, 2L)
+        assertTrue(store.book(id)!!.hasNarration)
+    }
+
+    @Test
+    fun `a book in the library list reports its narration too`() {
+        val store = store()
+        val id = store.seedBook()
+        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, 2L)
+        assertTrue(store.books().single { it.id == id }.hasNarration)
     }
 }

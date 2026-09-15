@@ -37,6 +37,8 @@ class LibraryScreen(
     private val onPlayLocal: (LocalBook) -> Unit = onOpenLocal,
     private val onSetHiddenLocal: (LocalBook, Boolean) -> Unit = { _, _ -> },
     private val onRemoveLocal: (LocalBook) -> Unit = {},
+    private val onAddNarration: (LocalBook) -> Unit = {},
+    private val onRemoveNarration: (LocalBook) -> Unit = {},
     private val initialError: String? = null,
     private val onNavigate: (AppSection) -> Unit = {},
     private val preferences: AppPreferences = AppPreferences(context),
@@ -799,6 +801,30 @@ class LibraryScreen(
                 dialog.dismiss()
                 onSetHiddenLocal(book, !book.hidden)
             }, stack(Gap.MD))
+            addView(context.ruleView(theme.rule))
+            addView(bookActionRow(
+                title = if (book.hasNarration) "Replace narration" else "Add narration",
+                detail = if (book.hasNarration) {
+                    "Swap the audiobook paired with this book"
+                } else {
+                    "Pair an MP3, M4A, or M4B so you can move between reading and listening"
+                },
+                color = ink,
+            ) {
+                dialog.dismiss()
+                onAddNarration(book)
+            })
+            if (book.hasNarration) {
+                addView(context.ruleView(theme.rule))
+                addView(bookActionRow(
+                    title = "Remove narration",
+                    detail = "Delete the paired audio and its chapter list",
+                    color = theme.danger,
+                ) {
+                    dialog.dismiss()
+                    onRemoveNarration(book)
+                })
+            }
             addView(context.ruleView(theme.rule))
             addView(bookActionRow(
                 title = "Remove from library",
