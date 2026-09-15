@@ -1,0 +1,7 @@
+{
+  "medianAbsErrorMs": 250,
+  "p95AbsErrorMs": 750,
+  "minCoverage": 0.85,
+  "falseSyncToleranceMs": 2000,
+  "maxFalseSyncOnsets": 0
+}

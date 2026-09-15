@@ -1,0 +1,13 @@
+{
+  "description": "Ten seconds of narration that is not in the book. Every onset is shifted, so an aligner that anchors on position instead of content fails this and only this.",
+  "reference": "reference.txt",
+  "spoken": "reference.txt",
+  "expectedGranularity": "WORD",
+  "seed": 2,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": ["this", "recording", "is", "produced", "for", "the", "narratify", "alignment", "fixture", "suite"],
+  "dropRate": 0.0,
+  "substituteRate": 0.0
+}

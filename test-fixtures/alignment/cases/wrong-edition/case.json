@@ -1,0 +1,13 @@
+{
+  "description": "The user paired the wrong audiobook with the book. Refusing is the only correct answer; a plausible-looking alignment here is the worst outcome the feature can produce.",
+  "reference": "reference.txt",
+  "spoken": "unrelated.txt",
+  "expectedGranularity": "NONE",
+  "seed": 4,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": [],
+  "dropRate": 0.0,
+  "substituteRate": 0.0
+}

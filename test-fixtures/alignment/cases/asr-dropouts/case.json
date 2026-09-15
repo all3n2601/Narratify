@@ -1,0 +1,13 @@
+{
+  "description": "A transcript with roughly one word in ten missing or misheard, which is what a small offline model on a noisy recording actually produces.",
+  "reference": "reference.txt",
+  "spoken": "reference.txt",
+  "expectedGranularity": "WORD",
+  "seed": 7,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": [],
+  "dropRate": 0.06,
+  "substituteRate": 0.04
+}

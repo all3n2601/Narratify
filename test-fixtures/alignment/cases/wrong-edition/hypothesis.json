@@ -1,0 +1,158 @@
+[
+  {
+    "text": "Zephyr",
+    "startMs": 0,
+    "endMs": 390,
+    "confidence": 1.0
+  },
+  {
+    "text": "counted",
+    "startMs": 430,
+    "endMs": 865,
+    "confidence": 1.0
+  },
+  {
+    "text": "quokkas",
+    "startMs": 905,
+    "endMs": 1340,
+    "confidence": 1.0
+  },
+  {
+    "text": "beside",
+    "startMs": 1380,
+    "endMs": 1770,
+    "confidence": 1.0
+  },
+  {
+    "text": "a",
+    "startMs": 1810,
+    "endMs": 1975,
+    "confidence": 1.0
+  },
+  {
+    "text": "gazebo",
+    "startMs": 2015,
+    "endMs": 2405,
+    "confidence": 1.0
+  },
+  {
+    "text": "of",
+    "startMs": 2445,
+    "endMs": 2655,
+    "confidence": 1.0
+  },
+  {
+    "text": "xylem",
+    "startMs": 2695,
+    "endMs": 3040,
+    "confidence": 1.0
+  },
+  {
+    "text": "Halcyon",
+    "startMs": 3080,
+    "endMs": 3515,
+    "confidence": 1.0
+  },
+  {
+    "text": "ibex",
+    "startMs": 3555,
+    "endMs": 3855,
+    "confidence": 1.0
+  },
+  {
+    "text": "wandered",
+    "startMs": 3895,
+    "endMs": 4375,
+    "confidence": 1.0
+  },
+  {
+    "text": "past",
+    "startMs": 4415,
+    "endMs": 4715,
+    "confidence": 1.0
+  },
+  {
+    "text": "nimbus",
+    "startMs": 4755,
+    "endMs": 5145,
+    "confidence": 1.0
+  },
+  {
+    "text": "fjords",
+    "startMs": 5185,
+    "endMs": 5575,
+    "confidence": 1.0
+  },
+  {
+    "text": "Juniper",
+    "startMs": 5615,
+    "endMs": 6050,
+    "confidence": 1.0
+  },
+  {
+    "text": "lacquer",
+    "startMs": 6090,
+    "endMs": 6525,
+    "confidence": 1.0
+  },
+  {
+    "text": "festooned",
+    "startMs": 6565,
+    "endMs": 7090,
+    "confidence": 1.0
+  },
+  {
+    "text": "every",
+    "startMs": 7130,
+    "endMs": 7475,
+    "confidence": 1.0
+  },
+  {
+    "text": "obsidian",
+    "startMs": 7515,
+    "endMs": 7995,
+    "confidence": 1.0
+  },
+  {
+    "text": "trellis",
+    "startMs": 8035,
+    "endMs": 8470,
+    "confidence": 1.0
+  },
+  {
+    "text": "and",
+    "startMs": 8510,
+    "endMs": 8765,
+    "confidence": 1.0
+  },
+  {
+    "text": "vermilion",
+    "startMs": 8805,
+    "endMs": 9330,
+    "confidence": 1.0
+  },
+  {
+    "text": "kestrels",
+    "startMs": 9370,
+    "endMs": 9850,
+    "confidence": 1.0
+  },
+  {
+    "text": "quarrelled",
+    "startMs": 9890,
+    "endMs": 10460,
+    "confidence": 1.0
+  },
+  {
+    "text": "above",
+    "startMs": 10500,
+    "endMs": 10845,
+    "confidence": 1.0
+  },
+  {
+    "text": "them",
+    "startMs": 10885,
+    "endMs": 11185,
+    "confidence": 1.0
+  }
+]

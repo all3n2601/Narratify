@@ -1,0 +1,542 @@
+[
+  {
+    "text": "this",
+    "startMs": 0,
+    "endMs": 300,
+    "confidence": 1.0
+  },
+  {
+    "text": "recording",
+    "startMs": 340,
+    "endMs": 865,
+    "confidence": 1.0
+  },
+  {
+    "text": "is",
+    "startMs": 905,
+    "endMs": 1115,
+    "confidence": 1.0
+  },
+  {
+    "text": "produced",
+    "startMs": 1155,
+    "endMs": 1635,
+    "confidence": 1.0
+  },
+  {
+    "text": "for",
+    "startMs": 1675,
+    "endMs": 1930,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 1970,
+    "endMs": 2225,
+    "confidence": 1.0
+  },
+  {
+    "text": "narratify",
+    "startMs": 2265,
+    "endMs": 2790,
+    "confidence": 1.0
+  },
+  {
+    "text": "alignment",
+    "startMs": 2830,
+    "endMs": 3355,
+    "confidence": 1.0
+  },
+  {
+    "text": "fixture",
+    "startMs": 3395,
+    "endMs": 3830,
+    "confidence": 1.0
+  },
+  {
+    "text": "suite",
+    "startMs": 3870,
+    "endMs": 4215,
+    "confidence": 1.0
+  },
+  {
+    "text": "The",
+    "startMs": 4255,
+    "endMs": 4510,
+    "confidence": 1.0
+  },
+  {
+    "text": "lantern",
+    "startMs": 4550,
+    "endMs": 4985,
+    "confidence": 1.0
+  },
+  {
+    "text": "went",
+    "startMs": 5025,
+    "endMs": 5325,
+    "confidence": 1.0
+  },
+  {
+    "text": "out",
+    "startMs": 5365,
+    "endMs": 5620,
+    "confidence": 1.0
+  },
+  {
+    "text": "at",
+    "startMs": 5660,
+    "endMs": 5870,
+    "confidence": 1.0
+  },
+  {
+    "text": "half",
+    "startMs": 5910,
+    "endMs": 6210,
+    "confidence": 1.0
+  },
+  {
+    "text": "past",
+    "startMs": 6250,
+    "endMs": 6550,
+    "confidence": 1.0
+  },
+  {
+    "text": "four",
+    "startMs": 6590,
+    "endMs": 6890,
+    "confidence": 1.0
+  },
+  {
+    "text": "and",
+    "startMs": 6930,
+    "endMs": 7185,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 7225,
+    "endMs": 7480,
+    "confidence": 1.0
+  },
+  {
+    "text": "harbour",
+    "startMs": 7520,
+    "endMs": 7955,
+    "confidence": 1.0
+  },
+  {
+    "text": "turned",
+    "startMs": 7995,
+    "endMs": 8385,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 8425,
+    "endMs": 8680,
+    "confidence": 1.0
+  },
+  {
+    "text": "colour",
+    "startMs": 8720,
+    "endMs": 9110,
+    "confidence": 1.0
+  },
+  {
+    "text": "of",
+    "startMs": 9150,
+    "endMs": 9360,
+    "confidence": 1.0
+  },
+  {
+    "text": "wet",
+    "startMs": 9400,
+    "endMs": 9655,
+    "confidence": 1.0
+  },
+  {
+    "text": "slate",
+    "startMs": 9695,
+    "endMs": 10040,
+    "confidence": 1.0
+  },
+  {
+    "text": "Mara",
+    "startMs": 10080,
+    "endMs": 10380,
+    "confidence": 1.0
+  },
+  {
+    "text": "counted",
+    "startMs": 10420,
+    "endMs": 10855,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 10895,
+    "endMs": 11150,
+    "confidence": 1.0
+  },
+  {
+    "text": "moored",
+    "startMs": 11190,
+    "endMs": 11580,
+    "confidence": 1.0
+  },
+  {
+    "text": "boats",
+    "startMs": 11620,
+    "endMs": 11965,
+    "confidence": 1.0
+  },
+  {
+    "text": "twice",
+    "startMs": 12005,
+    "endMs": 12350,
+    "confidence": 1.0
+  },
+  {
+    "text": "before",
+    "startMs": 12390,
+    "endMs": 12780,
+    "confidence": 1.0
+  },
+  {
+    "text": "she",
+    "startMs": 12820,
+    "endMs": 13075,
+    "confidence": 1.0
+  },
+  {
+    "text": "trusted",
+    "startMs": 13115,
+    "endMs": 13550,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 13590,
+    "endMs": 13845,
+    "confidence": 1.0
+  },
+  {
+    "text": "total",
+    "startMs": 13885,
+    "endMs": 14230,
+    "confidence": 1.0
+  },
+  {
+    "text": "Seven",
+    "startMs": 14270,
+    "endMs": 14615,
+    "confidence": 1.0
+  },
+  {
+    "text": "were",
+    "startMs": 14655,
+    "endMs": 14955,
+    "confidence": 1.0
+  },
+  {
+    "text": "tied",
+    "startMs": 14995,
+    "endMs": 15295,
+    "confidence": 1.0
+  },
+  {
+    "text": "along",
+    "startMs": 15335,
+    "endMs": 15680,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 15720,
+    "endMs": 15975,
+    "confidence": 1.0
+  },
+  {
+    "text": "north",
+    "startMs": 16015,
+    "endMs": 16360,
+    "confidence": 1.0
+  },
+  {
+    "text": "wall",
+    "startMs": 16400,
+    "endMs": 16700,
+    "confidence": 1.0
+  },
+  {
+    "text": "and",
+    "startMs": 16740,
+    "endMs": 16995,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 17035,
+    "endMs": 17290,
+    "confidence": 1.0
+  },
+  {
+    "text": "eighth",
+    "startMs": 17330,
+    "endMs": 17720,
+    "confidence": 1.0
+  },
+  {
+    "text": "berth",
+    "startMs": 17760,
+    "endMs": 18105,
+    "confidence": 1.0
+  },
+  {
+    "text": "held",
+    "startMs": 18145,
+    "endMs": 18445,
+    "confidence": 1.0
+  },
+  {
+    "text": "nothing",
+    "startMs": 18485,
+    "endMs": 18920,
+    "confidence": 1.0
+  },
+  {
+    "text": "but",
+    "startMs": 18960,
+    "endMs": 19215,
+    "confidence": 1.0
+  },
+  {
+    "text": "frayed",
+    "startMs": 19255,
+    "endMs": 19645,
+    "confidence": 1.0
+  },
+  {
+    "text": "rope",
+    "startMs": 19685,
+    "endMs": 19985,
+    "confidence": 1.0
+  },
+  {
+    "text": "She",
+    "startMs": 20025,
+    "endMs": 20280,
+    "confidence": 1.0
+  },
+  {
+    "text": "wrote",
+    "startMs": 20320,
+    "endMs": 20665,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 20705,
+    "endMs": 20960,
+    "confidence": 1.0
+  },
+  {
+    "text": "figure",
+    "startMs": 21000,
+    "endMs": 21390,
+    "confidence": 1.0
+  },
+  {
+    "text": "in",
+    "startMs": 21430,
+    "endMs": 21640,
+    "confidence": 1.0
+  },
+  {
+    "text": "her",
+    "startMs": 21680,
+    "endMs": 21935,
+    "confidence": 1.0
+  },
+  {
+    "text": "notebook",
+    "startMs": 21975,
+    "endMs": 22455,
+    "confidence": 1.0
+  },
+  {
+    "text": "underlined",
+    "startMs": 22495,
+    "endMs": 23065,
+    "confidence": 1.0
+  },
+  {
+    "text": "it",
+    "startMs": 23105,
+    "endMs": 23315,
+    "confidence": 1.0
+  },
+  {
+    "text": "and",
+    "startMs": 23355,
+    "endMs": 23610,
+    "confidence": 1.0
+  },
+  {
+    "text": "walked",
+    "startMs": 23650,
+    "endMs": 24040,
+    "confidence": 1.0
+  },
+  {
+    "text": "back",
+    "startMs": 24080,
+    "endMs": 24380,
+    "confidence": 1.0
+  },
+  {
+    "text": "along",
+    "startMs": 24420,
+    "endMs": 24765,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 24805,
+    "endMs": 25060,
+    "confidence": 1.0
+  },
+  {
+    "text": "breakwater",
+    "startMs": 25100,
+    "endMs": 25670,
+    "confidence": 1.0
+  },
+  {
+    "text": "without",
+    "startMs": 25710,
+    "endMs": 26145,
+    "confidence": 1.0
+  },
+  {
+    "text": "hurrying",
+    "startMs": 26185,
+    "endMs": 26665,
+    "confidence": 1.0
+  },
+  {
+    "text": "Somebody",
+    "startMs": 26705,
+    "endMs": 27185,
+    "confidence": 1.0
+  },
+  {
+    "text": "would",
+    "startMs": 27225,
+    "endMs": 27570,
+    "confidence": 1.0
+  },
+  {
+    "text": "ask",
+    "startMs": 27610,
+    "endMs": 27865,
+    "confidence": 1.0
+  },
+  {
+    "text": "her",
+    "startMs": 27905,
+    "endMs": 28160,
+    "confidence": 1.0
+  },
+  {
+    "text": "about",
+    "startMs": 28200,
+    "endMs": 28545,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 28585,
+    "endMs": 28840,
+    "confidence": 1.0
+  },
+  {
+    "text": "missing",
+    "startMs": 28880,
+    "endMs": 29315,
+    "confidence": 1.0
+  },
+  {
+    "text": "hull",
+    "startMs": 29355,
+    "endMs": 29655,
+    "confidence": 1.0
+  },
+  {
+    "text": "before",
+    "startMs": 29695,
+    "endMs": 30085,
+    "confidence": 1.0
+  },
+  {
+    "text": "the",
+    "startMs": 30125,
+    "endMs": 30380,
+    "confidence": 1.0
+  },
+  {
+    "text": "morning",
+    "startMs": 30420,
+    "endMs": 30855,
+    "confidence": 1.0
+  },
+  {
+    "text": "was",
+    "startMs": 30895,
+    "endMs": 31150,
+    "confidence": 1.0
+  },
+  {
+    "text": "over",
+    "startMs": 31190,
+    "endMs": 31490,
+    "confidence": 1.0
+  },
+  {
+    "text": "and",
+    "startMs": 31530,
+    "endMs": 31785,
+    "confidence": 1.0
+  },
+  {
+    "text": "she",
+    "startMs": 31825,
+    "endMs": 32080,
+    "confidence": 1.0
+  },
+  {
+    "text": "wanted",
+    "startMs": 32120,
+    "endMs": 32510,
+    "confidence": 1.0
+  },
+  {
+    "text": "an",
+    "startMs": 32550,
+    "endMs": 32760,
+    "confidence": 1.0
+  },
+  {
+    "text": "answer",
+    "startMs": 32800,
+    "endMs": 33190,
+    "confidence": 1.0
+  },
+  {
+    "text": "ready",
+    "startMs": 33230,
+    "endMs": 33575,
+    "confidence": 1.0
+  }
+]

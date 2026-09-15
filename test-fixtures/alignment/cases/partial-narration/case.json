@@ -1,0 +1,13 @@
+{
+  "description": "An audiobook that covers only part of the text it was paired with. The result must be offered as sentences, never as words.",
+  "reference": "reference.txt",
+  "spoken": "partial.txt",
+  "expectedGranularity": "SENTENCE",
+  "seed": 3,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": [],
+  "dropRate": 0.0,
+  "substituteRate": 0.0
+}

@@ -1,0 +1,13 @@
+{
+  "description": "A narrator who read the text exactly. Anything but near-perfect recovery here is an algorithm bug, not a hard case.",
+  "reference": "reference.txt",
+  "spoken": "reference.txt",
+  "expectedGranularity": "WORD",
+  "seed": 1,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": [],
+  "dropRate": 0.0,
+  "substituteRate": 0.0
+}
