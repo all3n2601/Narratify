@@ -489,6 +489,99 @@ class AlignmentModelsTest {
         assertEquals(AlignmentGranularity.CHAPTER, options.granularityFor(0.30))
         assertEquals(AlignmentGranularity.NONE, options.granularityFor(0.05))
     }
+
+    @Test
+    fun `a ratio exactly on a threshold earns the better granularity`() {
+        val options = AlignmentOptions()
+        assertEquals(AlignmentGranularity.WORD, options.granularityFor(options.wordThreshold))
+        assertEquals(AlignmentGranularity.SENTENCE, options.granularityFor(options.sentenceThreshold))
+        assertEquals(AlignmentGranularity.CHAPTER, options.granularityFor(options.chapterThreshold))
+    }
+
+    @Test
+    fun `a valid multi-span map constructs`() {
+        val map = AlignmentMap(
+            publicationId = PublicationId("p"),
+            mediaItemId = MediaItemId("m"),
+            resourceId = ResourceId("r"),
+            granularity = AlignmentGranularity.WORD,
+            spans = listOf(span(0, 4, 0, 1000), span(4, 8, 1000, 2000)),
+        )
+        assertEquals(2, map.spans.size)
+        assertEquals(CURRENT_ALIGNMENT_SCHEMA_VERSION, map.schemaVersion)
+    }
+
+    @Test
+    fun `a map may summarise spans that are not all equally good`() {
+        val map = AlignmentMap(
+            publicationId = PublicationId("p"),
+            mediaItemId = MediaItemId("m"),
+            resourceId = ResourceId("r"),
+            granularity = AlignmentGranularity.SENTENCE,
+            spans = listOf(
+                span(0, 4, 0, 1000),
+                span(4, 8, 1000, 2000, ratio = 0.1).copy(granularity = AlignmentGranularity.CHAPTER),
+            ),
+        )
+        assertEquals(AlignmentGranularity.SENTENCE, map.granularity)
+    }
+
+    @Test
+    fun `a map cannot claim a granularity none of its spans reached`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentMap(
+                publicationId = PublicationId("p"),
+                mediaItemId = MediaItemId("m"),
+                resourceId = ResourceId("r"),
+                granularity = AlignmentGranularity.WORD,
+                spans = listOf(span(0, 4, 0, 1000, ratio = 0.0).copy(granularity = AlignmentGranularity.NONE)),
+            )
+        }
+    }
+
+    @Test
+    fun `a refused alignment carries no spans`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentMap(
+                publicationId = PublicationId("p"),
+                mediaItemId = MediaItemId("m"),
+                resourceId = ResourceId("r"),
+                granularity = AlignmentGranularity.NONE,
+                spans = listOf(span(0, 4, 0, 1000)),
+            )
+        }
+    }
+
+    @Test
+    fun `a result cannot describe tokens it has no timings for`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentResult(
+                timings = listOf(TokenTiming(0, 0, 100, matched = true)),
+                spans = listOf(span(0, 4, 0, 100)),
+                matchedRatio = 1.0,
+                granularity = AlignmentGranularity.WORD,
+            )
+        }
+    }
+
+    @Test
+    fun `a result numbers its timings from zero without gaps`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentResult(
+                timings = listOf(TokenTiming(5, 0, 100, matched = true)),
+                spans = emptyList(),
+                matchedRatio = 1.0,
+                granularity = AlignmentGranularity.WORD,
+            )
+        }
+    }
+
+    @Test
+    fun `a refused result is a valid empty result`() {
+        val result = AlignmentResult.refused(0)
+        assertEquals(0, result.timings.size)
+        assertEquals(AlignmentGranularity.NONE, result.granularity)
+    }
 }
 ```
 
@@ -591,6 +684,18 @@ data class AlignmentMap(
                     earlier.endMs <= later.endMs
             },
         ) { "Spans must move forward in both the book and the audio" }
+        require(granularity != AlignmentGranularity.NONE || spans.isEmpty()) {
+            "A refused alignment must not carry spans"
+        }
+        // The map's granularity comes from the whole chapter's matched share, which is the
+        // token-weighted mean of its spans'. Because granularity falls monotonically with that
+        // share, the summary can sit anywhere between the best and worst span but never outside
+        // them. A chapter that is word-accurate overall may still contain a sentence nobody
+        // matched, so requiring agreement instead would be wrong.
+        require(
+            spans.isEmpty() ||
+                granularity in spans.minOf { it.granularity }..spans.maxOf { it.granularity },
+        ) { "Map granularity must lie between its best and worst span" }
     }
 }
 
@@ -628,6 +733,16 @@ data class AlignmentResult(
     val matchedRatio: Double,
     val granularity: AlignmentGranularity,
 ) {
+    init {
+        require(matchedRatio in 0.0..1.0) { "Matched ratio must be a proportion" }
+        require(timings.withIndex().all { (position, timing) -> timing.bookTokenIndex == position }) {
+            "Timings must cover book token indices 0 until n in order"
+        }
+        require(spans.all { it.bookTokenEndExclusive <= timings.size }) {
+            "Spans must not reference token indices beyond the timings list"
+        }
+    }
+
     companion object {
         fun refused(bookTokenCount: Int): AlignmentResult = AlignmentResult(
             timings = List(bookTokenCount) { TokenTiming(it, 0L, 0L, matched = false) },
@@ -642,7 +757,7 @@ data class AlignmentResult(
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 20 tests passing.
+Expected: `BUILD SUCCESSFUL`, 28 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -803,7 +918,7 @@ object BookTokenizer {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 26 tests passing.
+Expected: `BUILD SUCCESSFUL`, 34 tests passing.
 
 If `numerals align against what a narrator actually says` fails, read `shared/text/src/commonMain/kotlin/app/narratify/shared/text/TextNormalizer.kt:36` before changing anything — the expectation, not the code, is what is wrong, and the fix is to correct the test to the normalizer's real output.
 
@@ -982,7 +1097,7 @@ internal object AnchorFinder {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 32 tests passing.
+Expected: `BUILD SUCCESSFUL`, 40 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1134,7 +1249,7 @@ internal object BandedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 38 tests passing.
+Expected: `BUILD SUCCESSFUL`, 46 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1304,7 +1419,7 @@ internal object AlignmentMatcher {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 45 tests passing.
+Expected: `BUILD SUCCESSFUL`, 53 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1470,6 +1585,13 @@ import com.narratify.domain.ChunkId
  * narration of some other book refused entirely.
  */
 object ForcedAligner {
+    /**
+     * Every granularity in the result is derived here, from the matched share, and never set
+     * alongside it independently. No data class can check that rule: an `AlignedSpan` has no
+     * reference to the [AlignmentOptions] that produced it, and a map read back from disk may have
+     * been aligned under thresholds that have since changed, so recomputing and comparing would
+     * reject old data that was correct when it was written.
+     */
     fun align(
         bookTokens: List<BookToken>,
         hypothesis: List<AsrToken>,
@@ -1589,7 +1711,7 @@ object ForcedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 54 tests passing.
+Expected: `BUILD SUCCESSFUL`, 62 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1744,7 +1866,7 @@ object AlignmentCodec {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 58 tests passing.
+Expected: `BUILD SUCCESSFUL`, 66 tests passing.
 
 - [ ] **Step 5: Commit**
 
