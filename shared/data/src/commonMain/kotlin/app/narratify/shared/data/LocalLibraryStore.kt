@@ -23,6 +23,22 @@ data class StoredTextPosition(
     val progression: Float,
 )
 
+data class StoredNarration(
+    val storageUri: String,
+    val displayName: String?,
+    val mediaType: String?,
+    val byteSize: Long,
+)
+
+data class StoredChapter(
+    val index: Int,
+    val title: String?,
+    val startMs: Long,
+    val endMs: Long,
+    val spineIndex: Int?,
+    val confirmed: Boolean,
+)
+
 /**
  * Database-backed local library state. File copying and text decoding stay in
  * platform adapters; library identity and resilient positions live here.
@@ -349,10 +365,103 @@ class LocalLibraryStore(private val database: NarratifyDatabase) {
         }
     }
 
+    /**
+     * Attaches a narration to a book that already exists.
+     *
+     * The narration is a second file on the same publication rather than a publication of its own,
+     * so the book keeps one identity, one reading position, and one row in the library. Attaching
+     * a second narration replaces the first: a book has one recorded reading here, and keeping
+     * both would leave the chapter rows ambiguous about which file they index.
+     */
+    fun attachNarration(
+        publicationId: String,
+        storageUri: String,
+        displayName: String?,
+        mediaType: String?,
+        contentHash: String,
+        byteSize: Long,
+        now: Long,
+    ) {
+        database.transaction {
+            database.filesQueries.deleteFilesForRole(publicationId, NARRATION_FILE_ROLE)
+            database.filesQueries.insertLibraryFile(
+                id = "narration:$publicationId",
+                publication_id = publicationId,
+                role = NARRATION_FILE_ROLE,
+                storage_uri = storageUri,
+                display_name = displayName,
+                media_type = mediaType,
+                content_hash = contentHash,
+                byte_size = byteSize,
+                source_modified_at = null,
+                is_linked = 0,
+                resource_index = 0,
+                created_at = now,
+                updated_at = now,
+            )
+        }
+    }
+
+    fun narration(publicationId: String): StoredNarration? =
+        database.filesQueries.selectFilesForPublication(publicationId)
+            .executeAsList()
+            .firstOrNull { it.role == NARRATION_FILE_ROLE }
+            ?.let {
+                StoredNarration(
+                    storageUri = it.storage_uri,
+                    displayName = it.display_name,
+                    mediaType = it.media_type,
+                    byteSize = it.byte_size,
+                )
+            }
+
+    fun detachNarration(publicationId: String) {
+        database.transaction {
+            database.narrationChaptersQueries.deleteChapters(publicationId)
+            database.filesQueries.deleteFilesForRole(publicationId, NARRATION_FILE_ROLE)
+        }
+    }
+
+    fun saveChapters(publicationId: String, chapters: List<StoredChapter>) {
+        database.transaction {
+            database.narrationChaptersQueries.deleteChapters(publicationId)
+            for (chapter in chapters) {
+                database.narrationChaptersQueries.insertChapter(
+                    publication_id = publicationId,
+                    chapter_index = chapter.index.toLong(),
+                    title = chapter.title,
+                    start_ms = chapter.startMs,
+                    end_ms = chapter.endMs,
+                    spine_index = chapter.spineIndex?.toLong(),
+                    confirmed = if (chapter.confirmed) 1L else 0L,
+                )
+            }
+        }
+    }
+
+    fun chapters(publicationId: String): List<StoredChapter> =
+        database.narrationChaptersQueries.selectChapters(publicationId).executeAsList().map(::storedChapter)
+
+    fun chapterForSpine(publicationId: String, spineIndex: Int): StoredChapter? =
+        database.narrationChaptersQueries
+            .selectChapterForSpine(publicationId, spineIndex.toLong())
+            .executeAsOneOrNull()
+            ?.let(::storedChapter)
+
+    private fun storedChapter(row: com.narratify.data.db.Narration_chapter): StoredChapter = StoredChapter(
+        index = row.chapter_index.toInt(),
+        title = row.title,
+        startMs = row.start_ms,
+        endMs = row.end_ms,
+        spineIndex = row.spine_index?.toInt(),
+        confirmed = row.confirmed == 1L,
+    )
+
     companion object {
         private const val READY_STATE = "ready"
         private const val HIDDEN_STATE = "hidden"
         private const val ORIGINAL_FILE_ROLE = "original"
+        private const val NARRATION_FILE_ROLE = "narration"
         private const val TEXT_RESOURCE_ID = "content"
         private const val TEXT_OFFSET_PREFIX = "text-offset:"
         private const val EPUB_LOCATOR_PREFIX = "readium-locator-json:"

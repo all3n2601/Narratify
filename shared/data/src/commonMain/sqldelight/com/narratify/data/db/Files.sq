@@ -41,3 +41,6 @@ INSERT INTO library_file(
 deleteFilesForPublication:
 DELETE FROM library_file WHERE publication_id = ?;
 
+deleteFilesForRole:
+DELETE FROM library_file WHERE publication_id = ? AND role = ?;
+
