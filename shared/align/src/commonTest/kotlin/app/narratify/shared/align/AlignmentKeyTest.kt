@@ -30,6 +30,25 @@ class AlignmentKeyTest {
     }
 
     @Test
+    fun `a hyphenated word is not a homograph of the word without it`() {
+        assertNotEquals(AlignmentKey.fold("re-form"), AlignmentKey.fold("reform"))
+        assertEquals("re-form", AlignmentKey.fold("re-form"))
+    }
+
+    @Test
+    fun `an abbreviation is not a homograph of a word`() {
+        assertNotEquals(AlignmentKey.fold("U.S"), AlignmentKey.fold("us"))
+    }
+
+    @Test
+    fun `a mark at the edge of a token is punctuation rather than part of the word`() {
+        assertEquals("tis", AlignmentKey.fold("'tis"))
+        assertEquals("readers", AlignmentKey.fold("readers'"))
+        assertEquals("", AlignmentKey.fold("'"))
+        assertEquals("", AlignmentKey.fold("-"))
+    }
+
+    @Test
     fun `digits survive folding`() {
         assertEquals("1984", AlignmentKey.fold("1984."))
     }
