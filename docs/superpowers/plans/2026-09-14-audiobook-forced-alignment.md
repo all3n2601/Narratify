@@ -55,6 +55,11 @@ python3 -m unittest discover -s benchmarks/alignment/tests
 ./gradlew check
 ```
 
+**A naming rule that only fails on one target.** Kotlin/Native rejects a comma inside a backticked
+declaration name (`Name contains illegal characters: ","`). The JVM accepts it, so a test named
+that way passes `:shared:align:jvmTest` and then breaks `compileTestKotlinIosArm64`. No test name
+in this plan contains a comma; keep it that way if you add one.
+
 ## File structure
 
 | File | Responsibility |
@@ -150,6 +155,7 @@ package app.narratify.shared.align
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class AlignmentKeyTest {
     @Test
@@ -174,6 +180,25 @@ class AlignmentKeyTest {
         assertEquals("", AlignmentKey.fold("—"))
         assertEquals("", AlignmentKey.fold(""))
     }
+
+    @Test
+    fun `normalization form never decides a match`() {
+        // "café" precomposed (U+00E9) against "café" decomposed (e + U+0301). The two literals are
+        // visually identical on purpose — the escape is what distinguishes them.
+        assertEquals(AlignmentKey.fold("caf\u00e9"), AlignmentKey.fold("cafe\u0301"))
+        assertEquals("caf\u00e9", AlignmentKey.fold("cafe\u0301"))
+    }
+
+    @Test
+    fun `composing is not stripping so an accent still distinguishes two words`() {
+        assertNotEquals(AlignmentKey.fold("caf\u00e9"), AlignmentKey.fold("cafe"))
+    }
+
+    @Test
+    fun `scripts outside Latin fold to themselves`() {
+        assertEquals("\u043c\u043e\u0440\u0435", AlignmentKey.fold("\u041c\u043e\u0440\u0435,"))
+        assertEquals("\u6d77", AlignmentKey.fold("\u6d77\u3002"))
+    }
 }
 ```
 
@@ -182,7 +207,64 @@ class AlignmentKeyTest {
 Run: `./gradlew :shared:align:jvmTest`
 Expected: compilation failure, `Unresolved reference: AlignmentKey`.
 
-- [ ] **Step 5: Write the implementation**
+- [ ] **Step 5: Write the canonical composition helper**
+
+`fold` compares text from two independent pipelines, so it composes before it folds. Kotlin's
+common standard library has no normalizer, which makes this the module's first `expect`/`actual`.
+
+Create `shared/align/src/commonMain/kotlin/app/narratify/shared/align/UnicodeNormalization.kt`:
+
+```kotlin
+package app.narratify.shared.align
+
+/**
+ * Canonical composition, NFC.
+ *
+ * An EPUB and a speech recognizer are independent pipelines with no shared normalization form, so
+ * the same word can arrive precomposed from one and decomposed from the other. Composing both
+ * before folding is what makes the comparison about the word rather than about its encoding. It
+ * matters most in languages where diacritics carry meaning: decomposed Vietnamese folds "mã",
+ * "mạ", and "mà" onto one key, which would make those texts unmatchable.
+ */
+internal expect fun String.canonicallyComposed(): String
+```
+
+Create the same actual in both `shared/align/src/jvmMain/kotlin/app/narratify/shared/align/UnicodeNormalization.kt`
+and `shared/align/src/androidMain/kotlin/app/narratify/shared/align/UnicodeNormalization.kt`. This
+module's Android and JVM targets are separate leaf source sets, the way `shared/data` declares
+them, so neither can see a file written only for the other:
+
+```kotlin
+package app.narratify.shared.align
+
+import java.text.Normalizer
+
+internal actual fun String.canonicallyComposed(): String =
+    if (Normalizer.isNormalized(this, Normalizer.Form.NFC)) this
+    else Normalizer.normalize(this, Normalizer.Form.NFC)
+```
+
+The `isNormalized` guard is there because almost all real text is already NFC and `normalize`
+allocates unconditionally. This runs once per token across an entire book.
+
+Create `shared/align/src/iosMain/kotlin/app/narratify/shared/align/UnicodeNormalization.kt`, which
+covers both `iosArm64` and `iosSimulatorArm64`:
+
+```kotlin
+package app.narratify.shared.align
+
+import platform.Foundation.NSString
+import platform.Foundation.precomposedStringWithCanonicalMapping
+
+internal actual fun String.canonicallyComposed(): String =
+    (this as NSString).precomposedStringWithCanonicalMapping
+```
+
+That cast draws `w: This cast can never succeed` from the Kotlin/Native compiler. The warning is
+wrong: the type checker does not model the `String`/`NSString` interop bridge, and the cast
+succeeds at runtime. Leave it rather than suppressing it module-wide.
+
+- [ ] **Step 6: Write the implementation**
 
 Create `shared/align/src/commonMain/kotlin/app/narratify/shared/align/AlignmentKey.kt`:
 
@@ -196,22 +278,36 @@ package app.narratify.shared.align
  * and once over every token of its narration, so anything clever here is paid for a hundred
  * thousand times. Dropping everything that is not a letter or a digit also drops the apostrophe,
  * which is the one character typesetters and transcribers reliably disagree about.
+ *
+ * Both sides are canonically composed first, so a precomposed "café" and a decomposed one fold to
+ * the same key. Note this composes rather than strips: "café" and "cafe" remain different words,
+ * which is correct — a narrator who says one did not say the other.
  */
 object AlignmentKey {
-    fun fold(value: String): String = buildString(value.length) {
-        for (character in value) {
-            if (character.isLetterOrDigit()) append(character.lowercaseChar())
+    fun fold(value: String): String {
+        val composed = value.canonicallyComposed()
+        return buildString(composed.length) {
+            for (character in composed) {
+                if (character.isLetterOrDigit()) append(character.lowercaseChar())
+            }
         }
     }
 }
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [ ] **Step 7: Run the tests, on every target**
 
-Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 4 tests passing.
+This is the module's first `expect`/`actual`, so a JVM-only run proves nothing about the source-set
+layout:
 
-- [ ] **Step 7: Commit**
+```bash
+./gradlew :shared:align:jvmTest :shared:align:compileKotlinIosArm64 :shared:align:compileTestKotlinIosArm64
+```
+
+Expected: `BUILD SUCCESSFUL`, 7 tests passing, and the `This cast can never succeed` warning
+described above.
+
+- [ ] **Step 8: Commit**
 
 ```bash
 git add settings.gradle.kts shared/align
@@ -451,7 +547,7 @@ data class AlignmentResult(
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 10 tests passing.
+Expected: `BUILD SUCCESSFUL`, 13 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -612,7 +708,7 @@ object BookTokenizer {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 16 tests passing.
+Expected: `BUILD SUCCESSFUL`, 19 tests passing.
 
 If `numerals align against what a narrator actually says` fails, read `shared/text/src/commonMain/kotlin/app/narratify/shared/text/TextNormalizer.kt:36` before changing anything — the expectation, not the code, is what is wrong, and the fix is to correct the test to the normalizer's real output.
 
@@ -682,7 +778,7 @@ class AnchorFinderTest {
     }
 
     @Test
-    fun `uniqueness is judged inside the range being searched, not the whole chapter`() {
+    fun `uniqueness is judged inside the range being searched and not the whole chapter`() {
         // "the" repeats across the chapter but appears once inside the searched window, which is
         // what makes recursive narrowing find matches the first pass could not.
         val book = listOf("the", "harbour", "the", "boat")
@@ -791,7 +887,7 @@ internal object AnchorFinder {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 22 tests passing.
+Expected: `BUILD SUCCESSFUL`, 25 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -943,7 +1039,7 @@ internal object BandedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 28 tests passing.
+Expected: `BUILD SUCCESSFUL`, 31 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1113,7 +1209,7 @@ internal object AlignmentMatcher {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 35 tests passing.
+Expected: `BUILD SUCCESSFUL`, 38 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1224,7 +1320,7 @@ class ForcedAlignerTest {
     }
 
     @Test
-    fun `a half-recognized chapter is offered as sentences, not as words`() {
+    fun `a half-recognized chapter is offered as sentences rather than words`() {
         val book = bookOf("alpha bravo charlie delta echo foxtrot golf hotel india juliet")
         val result = ForcedAligner.align(book, narrate("alpha bravo charlie delta echo"))
         assertEquals(0.5, result.matchedRatio)
@@ -1393,7 +1489,7 @@ object ForcedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 44 tests passing.
+Expected: `BUILD SUCCESSFUL`, 47 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1548,7 +1644,7 @@ object AlignmentCodec {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 48 tests passing.
+Expected: `BUILD SUCCESSFUL`, 51 tests passing.
 
 - [ ] **Step 5: Commit**
 
