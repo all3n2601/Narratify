@@ -87,6 +87,18 @@ data class AlignmentMap(
                     earlier.endMs <= later.endMs
             },
         ) { "Spans must move forward in both the book and the audio" }
+        require(granularity != AlignmentGranularity.NONE || spans.isEmpty()) {
+            "A refused alignment must not carry spans"
+        }
+        // The map's granularity comes from the whole chapter's matched share, which is the
+        // token-weighted mean of its spans'. Because granularity falls monotonically with that
+        // share, the summary can sit anywhere between the best and worst span but never outside
+        // them. A chapter that is word-accurate overall may still contain a sentence nobody
+        // matched, so requiring agreement instead would be wrong.
+        require(
+            spans.isEmpty() ||
+                granularity in spans.minOf { it.granularity }..spans.maxOf { it.granularity },
+        ) { "Map granularity must lie between its best and worst span" }
     }
 }
 
@@ -124,6 +136,16 @@ data class AlignmentResult(
     val matchedRatio: Double,
     val granularity: AlignmentGranularity,
 ) {
+    init {
+        require(matchedRatio in 0.0..1.0) { "Matched ratio must be a proportion" }
+        require(timings.withIndex().all { (position, timing) -> timing.bookTokenIndex == position }) {
+            "Timings must cover book token indices 0 until n in order"
+        }
+        require(spans.all { it.bookTokenEndExclusive <= timings.size }) {
+            "Spans must not reference token indices beyond the timings list"
+        }
+    }
+
     companion object {
         fun refused(bookTokenCount: Int): AlignmentResult = AlignmentResult(
             timings = List(bookTokenCount) { TokenTiming(it, 0L, 0L, matched = false) },

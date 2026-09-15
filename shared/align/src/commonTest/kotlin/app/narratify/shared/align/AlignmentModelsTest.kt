@@ -80,4 +80,97 @@ class AlignmentModelsTest {
         assertEquals(AlignmentGranularity.CHAPTER, options.granularityFor(0.30))
         assertEquals(AlignmentGranularity.NONE, options.granularityFor(0.05))
     }
+
+    @Test
+    fun `a ratio exactly on a threshold earns the better granularity`() {
+        val options = AlignmentOptions()
+        assertEquals(AlignmentGranularity.WORD, options.granularityFor(options.wordThreshold))
+        assertEquals(AlignmentGranularity.SENTENCE, options.granularityFor(options.sentenceThreshold))
+        assertEquals(AlignmentGranularity.CHAPTER, options.granularityFor(options.chapterThreshold))
+    }
+
+    @Test
+    fun `a valid multi-span map constructs`() {
+        val map = AlignmentMap(
+            publicationId = PublicationId("p"),
+            mediaItemId = MediaItemId("m"),
+            resourceId = ResourceId("r"),
+            granularity = AlignmentGranularity.WORD,
+            spans = listOf(span(0, 4, 0, 1000), span(4, 8, 1000, 2000)),
+        )
+        assertEquals(2, map.spans.size)
+        assertEquals(CURRENT_ALIGNMENT_SCHEMA_VERSION, map.schemaVersion)
+    }
+
+    @Test
+    fun `a map may summarise spans that are not all equally good`() {
+        val map = AlignmentMap(
+            publicationId = PublicationId("p"),
+            mediaItemId = MediaItemId("m"),
+            resourceId = ResourceId("r"),
+            granularity = AlignmentGranularity.SENTENCE,
+            spans = listOf(
+                span(0, 4, 0, 1000),
+                span(4, 8, 1000, 2000, ratio = 0.1).copy(granularity = AlignmentGranularity.CHAPTER),
+            ),
+        )
+        assertEquals(AlignmentGranularity.SENTENCE, map.granularity)
+    }
+
+    @Test
+    fun `a map cannot claim a granularity none of its spans reached`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentMap(
+                publicationId = PublicationId("p"),
+                mediaItemId = MediaItemId("m"),
+                resourceId = ResourceId("r"),
+                granularity = AlignmentGranularity.WORD,
+                spans = listOf(span(0, 4, 0, 1000, ratio = 0.0).copy(granularity = AlignmentGranularity.NONE)),
+            )
+        }
+    }
+
+    @Test
+    fun `a refused alignment carries no spans`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentMap(
+                publicationId = PublicationId("p"),
+                mediaItemId = MediaItemId("m"),
+                resourceId = ResourceId("r"),
+                granularity = AlignmentGranularity.NONE,
+                spans = listOf(span(0, 4, 0, 1000)),
+            )
+        }
+    }
+
+    @Test
+    fun `a result cannot describe tokens it has no timings for`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentResult(
+                timings = listOf(TokenTiming(0, 0, 100, matched = true)),
+                spans = listOf(span(0, 4, 0, 100)),
+                matchedRatio = 1.0,
+                granularity = AlignmentGranularity.WORD,
+            )
+        }
+    }
+
+    @Test
+    fun `a result numbers its timings from zero without gaps`() {
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentResult(
+                timings = listOf(TokenTiming(5, 0, 100, matched = true)),
+                spans = emptyList(),
+                matchedRatio = 1.0,
+                granularity = AlignmentGranularity.WORD,
+            )
+        }
+    }
+
+    @Test
+    fun `a refused result is a valid empty result`() {
+        val result = AlignmentResult.refused(0)
+        assertEquals(0, result.timings.size)
+        assertEquals(AlignmentGranularity.NONE, result.granularity)
+    }
 }
