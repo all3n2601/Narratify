@@ -836,6 +836,16 @@ class BookTokenizerTest {
     }
 
     @Test
+    fun `chunks already prepared can be tokenized without preparing them again`() {
+        val spans = listOf(span("The harbour turned grey."))
+        val chunks = TtsTextPreparer.prepare(spans)
+        assertEquals(
+            BookTokenizer.tokenize(spans).map(BookToken::key),
+            BookTokenizer.fromChunks(chunks).map(BookToken::key),
+        )
+    }
+
+    @Test
     fun `tokens of one chunk are contiguous so sentences can be regrouped by scanning once`() {
         val tokens = BookTokenizer.tokenize(
             listOf(span("One two three four five six seven eight. Nine ten eleven twelve thirteen fourteen fifteen sixteen.")),
@@ -1032,6 +1042,11 @@ internal data class Anchor(val bookIndex: Int, val hypothesisIndex: Int)
  * timeline run backwards, which a real reading never does. A wrong anchor sitting in an
  * order-consistent position survives untouched. Stopping two different words from folding to one
  * key in the first place is [AlignmentKey]'s job, not this one's.
+ *
+ * This is O(range) per call, and the caller is what keeps that affordable: [AlignmentMatcher]
+ * recurses over disjoint sub-ranges under a depth cap, so total work across a chapter is bounded
+ * by that cap times the token count rather than by its square. Calling this on overlapping ranges
+ * would quietly make alignment quadratic.
  */
 internal object AnchorFinder {
     fun find(
@@ -1169,6 +1184,13 @@ class BandedAlignerTest {
     }
 
     @Test
+    fun `a tie on cost prefers the diagonal even where another path would match`() {
+        // Both alignments cost 2. The path through cost[2][1] pairs the two "a"s; the diagonal
+        // path records nothing. Pinned because it is a deliberate trade, not an oversight.
+        assertEquals(emptyList(), align(listOf("x", "a"), listOf("a", "x")))
+    }
+
+    @Test
     fun `a gap too large to align refuses instead of allocating`() {
         val book = List(600) { "word" }
         val hypothesis = List(600) { "word" }
@@ -1197,6 +1219,14 @@ package app.narratify.shared.align
  * quadratic in both directions, which is affordable for the gaps anchoring leaves behind and
  * ruinous for anything larger, so it refuses rather than trying: a returned `null` means the
  * caller should narrow the range or interpolate across it.
+ *
+ * When several alignments tie on cost, the traceback prefers the diagonal, which can leave a
+ * match unrecorded that an equally cheap path would have found: aligning "x a" against "a x"
+ * finds nothing, though one path pairs the two "a"s. That is deliberate. The lost match costs
+ * coverage, which lowers the granularity the result may claim, whereas the alternative pairing
+ * asserts that a book token was spoken at the time of a word in a different position — a
+ * measurement, and possibly a wrong one. Whether recovering these is worth a second objective in
+ * the DP is a question for the gate, not for a guess.
  */
 internal object BandedAligner {
     /** Roughly 1 MB of int cells. A gap this size means anchoring failed, not that the book is hard. */
@@ -3086,6 +3116,12 @@ Do not fold these into this one.
    `(publication, media item, producer_version, schema_version)`, run alignment as a resumable
    per-chapter background job, and drive the existing word-highlighting renderer from
    `AlignedSpan` — the same path TTS highlighting already uses.
-4. **Tier 2, independently.** M4B chapter marks mapped to EPUB spine items give chapter-level
+4. **A second objective for the gap aligner.** `BandedAligner`'s traceback prefers the diagonal
+   when alignments tie on cost, which can leave a match unrecorded that an equally cheap path
+   would have found. Recovering it needs a match-count array carried through the DP, doubling its
+   memory and changing what the cell budget means. Worth doing only if the gate shows the lost
+   coverage matters, and only after weighing that a recovered match of this kind asserts a book
+   token was spoken at another position's time.
+5. **Tier 2, independently.** M4B chapter marks mapped to EPUB spine items give chapter-level
    jumping with no recognizer, no gate, and no risk. It is already listed at
    `IMPLEMENTATION_PLAN.md:436` and does not depend on any of this.
