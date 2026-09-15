@@ -1,0 +1,165 @@
+{"id":"dialogue-001","category":"dialogue","language":"en-US","tags":["quotes","question","contraction"],"text":"\"Are you bringing the lantern?\" Mara asked. \"I am, but it won't last past midnight.\""}
+{"id":"dialogue-002","category":"dialogue","language":"en-GB","tags":["interruption","em-dash"],"text":"\"I thought the train—\" \"The last train left ten minutes ago,\" Dev replied."}
+{"id":"dialogue-003","category":"dialogue","language":"en-US","tags":["nested-quote","exclamation"],"text":"Nora whispered, \"He said, 'Wait by the blue door,' not the green one!\""}
+{"id":"abbreviations-001","category":"abbreviations","language":"en-US","tags":["titles","initials","street"],"text":"Dr. Mina Patel met Prof. J. R. Bell at 8 St. James Ave. before noon."}
+{"id":"abbreviations-002","category":"abbreviations","language":"en-GB","tags":["units","latin"],"text":"The parcel weighed 3 kg, i.e. about as much as six hardback books."}
+{"id":"abbreviations-003","category":"abbreviations","language":"en-US","tags":["organizations","acronyms"],"text":"The U.N. memo reached NASA and the F.B.I. on the same afternoon."}
+{"id":"numbers-001","category":"numbers","language":"en-US","tags":["decimal","fraction","percentage"],"text":"The meter rose from 3.14 to 12.5, then settled at 7½ percent."}
+{"id":"numbers-002","category":"numbers","language":"en-US","tags":["ordinal","large-number","negative"],"text":"On her 21st attempt, Leena counted 1,024 steps and a temperature of −6 degrees."}
+{"id":"numbers-003","category":"numbers","language":"en-GB","tags":["range","ratio","dimensions"],"text":"Mix flour and water at a 3:2 ratio, then cut a 20-by-30-centimetre rectangle."}
+{"id":"money-dates-001","category":"money_dates","language":"en-US","tags":["currency","date","time"],"text":"The receipt dated March 4, 2026, showed $1,249.95 paid at 7:05 p.m."}
+{"id":"money-dates-002","category":"money_dates","language":"en-GB","tags":["currency","date","time"],"text":"On 14 September 2031, the 09:30 ferry fare will be £18.60."}
+{"id":"money-dates-003","category":"money_dates","language":"en-US","tags":["currency","year","zero"],"text":"In 2007 the grant was €80,000; by 2010, its balance was €0.00."}
+{"id":"names-001","category":"names","language":"en-US","tags":["proper-names","places"],"text":"Siobhan O'Rourke mailed a postcard from Worcester to Joaquin Nguyen in Boise."}
+{"id":"names-002","category":"names","language":"en-US","tags":["diacritics","proper-names"],"text":"Beyoncé, Zoë, Björn, and Renée reserved a table under the name Łukasz."}
+{"id":"names-003","category":"names","language":"en-GB","tags":["places","ambiguous-spelling"],"text":"A courier travelled from Reading to Leicester, then continued north to Edinburgh."}
+{"id":"headings-001","category":"headings","language":"en-US","tags":["chapter","roman-numeral"],"text":"Chapter XIV: The Observatory Beyond the Hill"}
+{"id":"headings-002","category":"headings","language":"en-US","tags":["part-number","colon"],"text":"Part Three: A Practical Guide to Quiet Machines"}
+{"id":"headings-003","category":"headings","language":"en-GB","tags":["question","short"],"text":"Why Do Tides Turn?"}
+{"id":"nonfiction-001","category":"nonfiction","language":"en-US","tags":["technical","parenthetical"],"text":"A checksum is a compact value computed from data. If the data changes—even by one bit—the recomputed value will usually differ."}
+{"id":"nonfiction-002","category":"nonfiction","language":"en-GB","tags":["science","comma-list"],"text":"A coastal wetland can slow floodwater, shelter juvenile fish, store carbon, and filter sediment before it reaches the sea."}
+{"id":"nonfiction-003","category":"nonfiction","language":"en-US","tags":["instructions","sequence"],"text":"First, disconnect the battery. Next, inspect the cable for damage. Finally, tighten the terminal by hand before using a tool."}
+{"id":"fiction-001","category":"fiction","language":"en-US","tags":["narration","imagery"],"text":"Rain polished the empty avenue until every traffic light floated twice: once above the street and once beneath it."}
+{"id":"fiction-002","category":"fiction","language":"en-GB","tags":["narration","semicolon"],"text":"The key fitted the smallest lock; beyond it waited a room that smelled of cedar, dust, and oranges."}
+{"id":"fiction-003","category":"fiction","language":"en-US","tags":["narration","short-sentences"],"text":"The motor stopped. No birds called. Eli listened, counted to five, and stepped onto the ice."}
+{"id":"punctuation-001","category":"punctuation","language":"en-US","tags":["ellipsis","dash","colon"],"text":"There were three possibilities… wait, four: north, south, east—and the tunnel below."}
+{"id":"punctuation-002","category":"punctuation","language":"en-US","tags":["parentheses","semicolon","slash"],"text":"The old route (closed since spring) was shorter; the new walking/bicycle path was safer."}
+{"id":"punctuation-003","category":"punctuation","language":"en-GB","tags":["possessive","hyphenation"],"text":"The editor-in-chief's well-marked proof lay beside the printer's tray."}
+{"id":"long-sentence-001","category":"long_sentence","language":"en-US","tags":["commas","semicolon","chunking"],"text":"Although the forecast promised a clear morning, the hikers packed rain shells, dry socks, a paper map, two compasses, and enough food for an extra day; experience had taught them that mountains rarely honour a convenient prediction."}
+{"id":"long-sentence-002","category":"long_sentence","language":"en-GB","tags":["colon","em-dash","chunking"],"text":"Before the museum opened, the conservator completed three delicate tasks: she photographed the cracked glaze, measured the shifting frame, and moved the lamp—whose heat had caused both problems—to the opposite wall."}
+{"id":"long-sentence-003","category":"long_sentence","language":"en-US","tags":["dialogue","nested-clauses"],"text":"When Arun finally answered, after checking the address twice and asking whether the package had a red label, he said that he could deliver it before sunset if the bridge remained open."}
+{"id":"footnotes-001","category":"footnotes","language":"en-US","tags":["marker","citation"],"text":"The survey included forty-two households.[1] The result should be treated as preliminary."}
+{"id":"footnotes-002","category":"footnotes","language":"en-GB","tags":["marker","asterisk"],"text":"The term first appeared in a shipping ledger* rather than in the later dictionary."}
+{"id":"footnotes-003","category":"footnotes","language":"en-US","tags":["citation","page-range"],"text":"A later experiment reached the opposite conclusion (Reyes, 2024, pp. 18–21)."}
+{"id":"unicode-001","category":"unicode","language":"en-US","tags":["emoji","symbols"],"text":"The status changed from ❌ to ✅, but the note still said, \"Call me ☎ tomorrow.\""}
+{"id":"unicode-002","category":"unicode","language":"en-US","tags":["combining-marks","diacritics"],"text":"The café served piñon tea, crème brûlée, and a jalapeño tart."}
+{"id":"unicode-003","category":"unicode","language":"en-US","tags":["typographic-quotes","nonbreaking-space"],"text":"The sign read “Open 10 a.m.–6 p.m.” and listed a 5 km walking route."}
+{"id":"code-url-001","category":"code_urls","language":"en-US","tags":["url","email"],"text":"Visit example.org/help or send a note to reader@example.org; neither address requires an account."}
+{"id":"code-url-002","category":"code_urls","language":"en-US","tags":["filename","version"],"text":"Open chapter_07.md, compare version 2.4.1, and keep the file named cover-final.png."}
+{"id":"code-url-003","category":"code_urls","language":"en-GB","tags":["code","symbols"],"text":"If x is greater than or equal to 10, set ready to true; otherwise, leave it false."}
+{"id":"poetry-001","category":"poetry","language":"en-US","tags":["line-breaks","rhythm"],"text":"A small bell wakes the harbour,\nthen fog folds every sound;\na gull becomes a question\nthat circles without ground."}
+{"id":"poetry-002","category":"poetry","language":"en-GB","tags":["line-breaks","punctuation"],"text":"Under the bridge: green water.\nOver the bridge: grey rain.\nBetween them walks a traveller,\ncounting each sleeper again."}
+{"id":"poetry-003","category":"poetry","language":"en-US","tags":["line-breaks","short-lines"],"text":"Turn the page.\nLet silence enter.\nBegin once more."}
+{"id":"mixed-language-001","category":"mixed_language","language":"en-US","tags":["foreign-phrase","language-switch"],"text":"At the doorway, Ana smiled and said, \"Buenos días, everyone. Breakfast is ready.\""}
+{"id":"mixed-language-002","category":"mixed_language","language":"en-GB","tags":["foreign-phrase","diacritics"],"text":"The menu described the soup as très léger, then recommended strong tea afterward."}
+{"id":"mixed-language-003","category":"mixed_language","language":"en-US","tags":["foreign-phrase","proper-name"],"text":"Kenji wrote, \"Arigatou, Maya,\" beneath the photograph from Kyoto."}
+{"id":"homograph-001","category":"homographs","language":"en-US","tags":["context","heteronym"],"text":"Please record the record before the archive closes."}
+{"id":"homograph-002","category":"homographs","language":"en-US","tags":["context","heteronym"],"text":"The guide will lead us past the old lead mine."}
+{"id":"homograph-003","category":"homographs","language":"en-GB","tags":["context","heteronym"],"text":"A tear in the sail brought a tear to the captain's eye."}
+{"id":"homograph-004","category":"homographs","language":"en-US","tags":["context","heteronym"],"text":"I object to placing that object beside the furnace."}
+{"id":"homograph-005","category":"homographs","language":"en-GB","tags":["context","heteronym"],"text":"The dove dove sharply as the wind rose over the cliff."}
+{"id":"addresses-001","category":"addresses","language":"en-US","tags":["street-number","direction"],"text":"Deliver the parcel to 704 West 3rd Street, Apartment 12B."}
+{"id":"addresses-002","category":"addresses","language":"en-GB","tags":["postal-code","unit"],"text":"The return address is Flat 6, 18 King Street, Bristol BS1 4QA."}
+{"id":"addresses-003","category":"addresses","language":"en-US","tags":["highway","direction"],"text":"Take I-95 north to Exit 27, then turn east on County Road 6."}
+{"id":"addresses-004","category":"addresses","language":"en-US","tags":["room-number","building"],"text":"Meet the technician in Building C, Room 2-014, at the south entrance."}
+{"id":"addresses-005","category":"addresses","language":"en-GB","tags":["postcode","hyphen"],"text":"A replacement was sent to 9 Market Lane, York, YO1 8QT."}
+{"id":"measurements-001","category":"measurements","language":"en-US","tags":["temperature","unit"],"text":"Bake the loaf at 375 degrees Fahrenheit until its centre reaches 190 degrees."}
+{"id":"measurements-002","category":"measurements","language":"en-GB","tags":["metric","decimal"],"text":"The specimen measured 4.7 millimetres across and weighed 0.08 grams."}
+{"id":"measurements-003","category":"measurements","language":"en-US","tags":["speed","range"],"text":"Wind speed increased from 12 to 28 miles per hour within five minutes."}
+{"id":"measurements-004","category":"measurements","language":"en-GB","tags":["area","superscript"],"text":"The panel covers 2.5 square metres and consumes 310 watts at peak output."}
+{"id":"measurements-005","category":"measurements","language":"en-US","tags":["volume","fraction"],"text":"Add one and a half cups of water and a quarter teaspoon of salt."}
+{"id":"science-001","category":"science","language":"en-US","tags":["chemical-formula","subscript"],"text":"Water is written H₂O, while carbon dioxide is written CO₂."}
+{"id":"science-002","category":"science","language":"en-GB","tags":["equation","symbols"],"text":"For this example, energy equals mass multiplied by the speed of light squared."}
+{"id":"science-003","category":"science","language":"en-US","tags":["species","latin-name"],"text":"The monarch butterfly, Danaus plexippus, migrates across much of North America."}
+{"id":"science-004","category":"science","language":"en-US","tags":["exponent","large-number"],"text":"The estimate was 6.02 times ten to the twenty-third particles per mole."}
+{"id":"science-005","category":"science","language":"en-GB","tags":["coordinates","degree"],"text":"The station lies at 51.5 degrees north and 0.1 degrees west."}
+{"id":"lists-001","category":"lists","language":"en-US","tags":["ordered-list","pause"],"text":"The checklist has three steps: one, lock the door; two, close the gate; and three, call the office."}
+{"id":"lists-002","category":"lists","language":"en-GB","tags":["unordered-list","pause"],"text":"Pack these items: a torch, spare batteries, a wool hat, and a bottle of water."}
+{"id":"lists-003","category":"lists","language":"en-US","tags":["nested-list","sequence"],"text":"Under tools, choose brushes and then soft round; under colour, choose neutral grey."}
+{"id":"lists-004","category":"lists","language":"en-US","tags":["letters","enumeration"],"text":"The valid answers are A, a northern route; B, a coastal route; or C, no journey."}
+{"id":"lists-005","category":"lists","language":"en-GB","tags":["compact","commas"],"text":"Required documents include a passport, a ticket, proof of address, and the signed form."}
+{"id":"navigation-001","category":"navigation","language":"en-US","tags":["cardinal-directions","distance"],"text":"Walk south for two blocks, turn northwest, and continue for half a mile."}
+{"id":"navigation-002","category":"navigation","language":"en-GB","tags":["floor","ordinal"],"text":"Take the lift to the fourth floor and enter the second door on your right."}
+{"id":"navigation-003","category":"navigation","language":"en-US","tags":["exit-number","route"],"text":"At exit 14A, keep left toward Route 9 and follow signs for the airport."}
+{"id":"navigation-004","category":"navigation","language":"en-GB","tags":["roundabout","ordinal"],"text":"At the roundabout, take the third exit, then bear left after the church."}
+{"id":"navigation-005","category":"navigation","language":"en-US","tags":["coordinates","floor"],"text":"The archive is downstairs, beyond aisle G, between shelves 42 and 43."}
+{"id":"phone-identifiers-001","category":"identifiers","language":"en-US","tags":["phone-number","digits"],"text":"For assistance, call 202-555-0148 and enter extension 73."}
+{"id":"phone-identifiers-002","category":"identifiers","language":"en-GB","tags":["reference-number","mixed-token"],"text":"Quote reference ZX-1049-B when speaking to the service desk."}
+{"id":"phone-identifiers-003","category":"identifiers","language":"en-US","tags":["isbn","digits"],"text":"The catalogue lists ISBN 978-1-4028-9462-6 for the replacement edition."}
+{"id":"phone-identifiers-004","category":"identifiers","language":"en-US","tags":["time-zone","acronym"],"text":"The meeting begins at 4:30 p.m. EDT and ends at 21:00 UTC."}
+{"id":"phone-identifiers-005","category":"identifiers","language":"en-GB","tags":["flight-number","gate"],"text":"Flight BA 218 now departs from Gate A17."}
+{"id":"questions-001","category":"questions","language":"en-US","tags":["question-chain","prosody"],"text":"Who moved the chair? When did they move it? Why is the window open?"}
+{"id":"questions-002","category":"questions","language":"en-GB","tags":["rhetorical","prosody"],"text":"What could be simpler than a warm meal after a long walk?"}
+{"id":"questions-003","category":"questions","language":"en-US","tags":["tag-question","contraction"],"text":"You've checked the map already, haven't you?"}
+{"id":"questions-004","category":"questions","language":"en-US","tags":["choice","prosody"],"text":"Would you prefer tea, coffee, or a glass of water?"}
+{"id":"questions-005","category":"questions","language":"en-GB","tags":["embedded-question","prosody"],"text":"She asked whether the library would remain open after six."}
+{"id":"emotion-001","category":"emotion","language":"en-US","tags":["excitement","prosody"],"text":"We made it before the doors closed! I can hardly believe our luck!"}
+{"id":"emotion-002","category":"emotion","language":"en-GB","tags":["hesitation","prosody"],"text":"I suppose we could continue, though the path looks rather uncertain."}
+{"id":"emotion-003","category":"emotion","language":"en-US","tags":["urgency","imperative"],"text":"Stop! Put the box down carefully and step away from the broken glass."}
+{"id":"emotion-004","category":"emotion","language":"en-US","tags":["reassurance","prosody"],"text":"It is all right. Take a slow breath; there is plenty of time."}
+{"id":"emotion-005","category":"emotion","language":"en-GB","tags":["sarcasm-risk","prosody"],"text":"Wonderful. Another perfectly timed rain shower with nowhere to shelter."}
+{"id":"parenthetical-001","category":"parenthetical","language":"en-US","tags":["parentheses","aside"],"text":"The eastern trail (the steeper of the two) reaches the lake before dusk."}
+{"id":"parenthetical-002","category":"parenthetical","language":"en-GB","tags":["brackets","editorial"],"text":"The letter was dated 1892 [the final digit is unclear] and signed only with an initial."}
+{"id":"parenthetical-003","category":"parenthetical","language":"en-US","tags":["dashes","aside"],"text":"The smallest engine—barely larger than a mug—powered the entire display."}
+{"id":"parenthetical-004","category":"parenthetical","language":"en-US","tags":["commas","appositive"],"text":"Rosa, the newest member of the crew, volunteered for the dawn watch."}
+{"id":"parenthetical-005","category":"parenthetical","language":"en-GB","tags":["nested-punctuation","citation"],"text":"The result (see Appendix B, especially Table 4) supports the earlier estimate."}
+{"id":"tables-001","category":"tables","language":"en-US","tags":["row","columns"],"text":"Monday: twelve visitors, four returns, total revenue sixty-eight dollars."}
+{"id":"tables-002","category":"tables","language":"en-GB","tags":["row","columns"],"text":"Oak: height eighteen metres; age ninety years; condition good."}
+{"id":"tables-003","category":"tables","language":"en-US","tags":["comparison","percentage"],"text":"Plan A costs forty dollars and covers 80 percent; Plan B costs sixty dollars and covers 95 percent."}
+{"id":"tables-004","category":"tables","language":"en-US","tags":["header","row"],"text":"Item, quantity, price. Lantern, two, twenty-four dollars each."}
+{"id":"tables-005","category":"tables","language":"en-GB","tags":["times","schedule"],"text":"Platform one, Oxford, 10:12. Platform three, Bristol, 10:18."}
+{"id":"whitespace-001","category":"whitespace","language":"en-US","tags":["multiple-spaces","normalization"],"text":"A sentence may contain   several spaces before the next word."}
+{"id":"whitespace-002","category":"whitespace","language":"en-US","tags":["line-break","hyphenation"],"text":"The manu-\nscript preserves a line-break hyphen that should become one spoken word."}
+{"id":"whitespace-003","category":"whitespace","language":"en-GB","tags":["paragraph-break","pause"],"text":"The first paragraph ends here.\n\nThe second begins after a deliberate pause."}
+{"id":"whitespace-004","category":"whitespace","language":"en-US","tags":["tabs","normalization"],"text":"Name:\tMorgan Lee\tStatus:\tReady for review."}
+{"id":"whitespace-005","category":"whitespace","language":"en-GB","tags":["nonbreaking-space","unit"],"text":"Keep 10 cm of clear space on every side of the heater."}
+{"id":"dialogue-004","category":"dialogue","language":"en-US","tags":["quotes","command","contraction"],"text":"\"Don't touch that switch,\" Imani said. \"The backup generator is still warming up.\""}
+{"id":"dialogue-005","category":"dialogue","language":"en-GB","tags":["question","short-turns"],"text":"\"Which platform?\" asked Sol. \"Number six.\" \"And when?\" \"In eleven minutes.\""}
+{"id":"dialogue-006","category":"dialogue","language":"en-US","tags":["interruption","ellipsis"],"text":"\"If we could just—\" Theo began. \"No, listen… the bell is ringing again.\""}
+{"id":"dialogue-007","category":"dialogue","language":"en-US","tags":["attribution","question","exclamation"],"text":"Lena called from the stairs, \"Did anyone order twelve yellow umbrellas?\" \"I did!\" said Omar."}
+{"id":"abbreviations-004","category":"abbreviations","language":"en-US","tags":["titles","company","time"],"text":"Ms. R. Alvarez joined Acme Co. at 9:30 a.m. for the quarterly review."}
+{"id":"abbreviations-005","category":"abbreviations","language":"en-GB","tags":["academic","latin","volume"],"text":"See vol. IV, ch. 2, e.g. the note concerning coastal trade."}
+{"id":"abbreviations-006","category":"abbreviations","language":"en-US","tags":["address","directions","state"],"text":"Mail the form to 82 W. Cedar Rd., Albany, N.Y., before Friday."}
+{"id":"abbreviations-007","category":"abbreviations","language":"en-US","tags":["degrees","initialism","units"],"text":"Capt. Lee reported a wind from the N.N.E. at 14 mph."}
+{"id":"numbers-004","category":"numbers","language":"en-US","tags":["phone-number","extension","digits"],"text":"Call 555-0139, extension 204, and enter the six-digit code 731806."}
+{"id":"numbers-005","category":"numbers","language":"en-GB","tags":["scientific-notation","decimal","units"],"text":"The sample measured 6.02 × 10²³ particles and weighed 0.004 grams."}
+{"id":"numbers-006","category":"numbers","language":"en-US","tags":["fraction","mixed-number","range"],"text":"Add ⅓ cup of oil, bake for 22–25 minutes, and cool for 1½ hours."}
+{"id":"numbers-007","category":"numbers","language":"en-US","tags":["score","zero","ordinal"],"text":"River City won 4–0, moving from 11th place to 8th in the table."}
+{"id":"money-dates-004","category":"money_dates","language":"en-US","tags":["currency","negative","accounting"],"text":"The statement closed on January 31 with a balance of negative $42.08."}
+{"id":"money-dates-005","category":"money_dates","language":"en-GB","tags":["date","time-zone","time"],"text":"The webinar begins at 18:45 GMT on 2 February 2028."}
+{"id":"money-dates-006","category":"money_dates","language":"en-US","tags":["currency","range","cents"],"text":"Tickets cost between $9.50 and $12.00, plus a 75-cent booking fee."}
+{"id":"money-dates-007","category":"money_dates","language":"en-GB","tags":["date","currency","year"],"text":"On 1 April 1999, the fund received ¥2,500,000 and €17.40."}
+{"id":"names-004","category":"names","language":"en-US","tags":["proper-names","apostrophe","hyphenation"],"text":"D'Arcy Kim and Anne-Marie Okafor met Chidi at Lafayette Square."}
+{"id":"names-005","category":"names","language":"en-GB","tags":["diacritics","places"],"text":"Søren travelled from Malmö through København before reaching Zürich."}
+{"id":"names-006","category":"names","language":"en-US","tags":["ambiguous-spelling","places"],"text":"Jordan read about Jordan while Georgia mapped a route through Georgia."}
+{"id":"names-007","category":"names","language":"en-US","tags":["initials","suffix","proper-names"],"text":"A. J. Washington Jr. introduced Dr. Mei-Ling Chen to Priya Shah."}
+{"id":"headings-004","category":"headings","language":"en-US","tags":["appendix","letter"],"text":"Appendix B: Maps, Measures, and Missing Roads"}
+{"id":"headings-005","category":"headings","language":"en-GB","tags":["ordinal","subtitle"],"text":"The Twenty-Second Window: Notes from an Empty Station"}
+{"id":"headings-006","category":"headings","language":"en-US","tags":["all-caps","short"],"text":"DO NOT OPEN UNTIL MORNING"}
+{"id":"headings-007","category":"headings","language":"en-US","tags":["chapter","decimal"],"text":"Chapter 4.2 — Measuring What Matters"}
+{"id":"nonfiction-004","category":"nonfiction","language":"en-US","tags":["definition","technical"],"text":"Latency is the delay between a request and its observable result. Throughput describes how much work completes during a period of time."}
+{"id":"nonfiction-005","category":"nonfiction","language":"en-GB","tags":["science","contrast"],"text":"Unlike weather, which describes short-term atmospheric conditions, climate summarises patterns observed over many years."}
+{"id":"nonfiction-006","category":"nonfiction","language":"en-US","tags":["instructions","warning"],"text":"Before replacing the filter, turn off the fan and wait until every blade has stopped. Wear gloves if the housing is hot."}
+{"id":"nonfiction-007","category":"nonfiction","language":"en-US","tags":["history","parenthetical"],"text":"The canal opened in 1887 and shortened the inland route by nearly sixty miles (about ninety-seven kilometres)."}
+{"id":"fiction-004","category":"fiction","language":"en-US","tags":["narration","sensory"],"text":"Warm bread scented the hallway, yet the kitchen was dark and every cupboard door stood open."}
+{"id":"fiction-005","category":"fiction","language":"en-GB","tags":["narration","dialogue"],"text":"A pale envelope waited beneath the clock. Nikhil turned it over and said, \"There is no stamp.\""}
+{"id":"fiction-006","category":"fiction","language":"en-US","tags":["narration","action"],"text":"June caught the rope with both hands, braced one boot against the rail, and pulled the drifting boat home."}
+{"id":"fiction-007","category":"fiction","language":"en-US","tags":["narration","fragment"],"text":"Beyond the orchard, a single window glowed. Not a house. Not a lantern. Something moving."}
+{"id":"punctuation-004","category":"punctuation","language":"en-US","tags":["brackets","colon","semicolon"],"text":"Three tools were missing [a wrench, a file, and a level]; two remained: the saw and the drill."}
+{"id":"punctuation-005","category":"punctuation","language":"en-GB","tags":["question-mark","exclamation","quotes"],"text":"Was the label really marked \"fragile\"?! Nobody in the depot could agree."}
+{"id":"punctuation-006","category":"punctuation","language":"en-US","tags":["parentheses","em-dash","ellipsis"],"text":"Her answer (after a very long pause) was—perhaps inevitably… no."}
+{"id":"punctuation-007","category":"punctuation","language":"en-US","tags":["slash","ampersand","hyphenation"],"text":"Choose input/output, research & development, or the short-term maintenance role."}
+{"id":"long-sentence-004","category":"long_sentence","language":"en-US","tags":["commas","parenthetical","chunking"],"text":"Because the ferry was delayed by fog, the musicians, who had expected an hour to rehearse, unpacked their instruments on the pier, tuned beneath the awning, and played softly for the waiting crowd."}
+{"id":"long-sentence-005","category":"long_sentence","language":"en-GB","tags":["semicolon","relative-clauses","chunking"],"text":"The archive contained letters that no historian had catalogued, maps whose borders had faded almost to white, and ledgers written in a hurried hand; nevertheless, Salma knew exactly which narrow box to open."}
+{"id":"long-sentence-006","category":"long_sentence","language":"en-US","tags":["colon","list","chunking"],"text":"To prepare for a winter outage, the neighbours divided the work carefully: one family stored water, another checked the radios, two people gathered blankets, and everyone agreed to meet beside the library."}
+{"id":"long-sentence-007","category":"long_sentence","language":"en-US","tags":["em-dash","nested-clauses","chunking"],"text":"After the final passenger boarded—and after the conductor retrieved a hat that had blown beneath a bench—the little train rolled away so quietly that the station dog did not wake."}
+{"id":"footnotes-004","category":"footnotes","language":"en-US","tags":["marker","dagger"],"text":"The earliest sketch uses a different scale.† Later copies follow the printed map."}
+{"id":"footnotes-005","category":"footnotes","language":"en-GB","tags":["citation","multiple-authors"],"text":"Several observers reported the same pattern (Khan and Ellis, 2019, p. 74)."}
+{"id":"footnotes-006","category":"footnotes","language":"en-US","tags":["marker","multiple-notes"],"text":"The recipe names two varieties.[2][3] Neither variety is common today."}
+{"id":"footnotes-007","category":"footnotes","language":"en-US","tags":["citation","doi"],"text":"The revised estimate appeared the following year (doi:10.0000/example.2025.7)."}
+{"id":"unicode-004","category":"unicode","language":"en-US","tags":["math-symbols","inequality"],"text":"For this test, α must be less than or equal to 0.05 while Δ remains greater than zero."}
+{"id":"unicode-005","category":"unicode","language":"en-GB","tags":["currency-symbols","diacritics"],"text":"The façade displayed prices in €, ₹, and ₩ beside a hand-painted sign."}
+{"id":"unicode-006","category":"unicode","language":"en-US","tags":["emoji","variation-selector"],"text":"The forecast showed sun ☀️ at noon, rain 🌧️ by four, and snow ❄️ overnight."}
+{"id":"unicode-007","category":"unicode","language":"en-US","tags":["ligature","typographic-quotes"],"text":"The encyclopædia called the old mark a “rare ligature,” not a printing error."}
+{"id":"code-url-004","category":"code_urls","language":"en-US","tags":["url","path","query"],"text":"Open https://example.org/books?id=42, then save the cover under assets/covers/42.jpg."}
+{"id":"code-url-005","category":"code_urls","language":"en-GB","tags":["identifier","camel-case","version"],"text":"Set preferredVoiceId to en_GB_03 before upgrading the reader to version 3.0.0-beta.2."}
+{"id":"code-url-006","category":"code_urls","language":"en-US","tags":["email","plus-address","domain"],"text":"Send logs to reader+android@example.test and copy support@example.test."}
+{"id":"code-url-007","category":"code_urls","language":"en-US","tags":["code","operators","symbols"],"text":"When count is not equal to zero and ready is true, increment index by one."}
+{"id":"poetry-004","category":"poetry","language":"en-US","tags":["line-breaks","rhyme"],"text":"The kettle starts to sing,\nthe window gathers steam;\na spoon becomes a silver oar\nthat crosses morning's dream."}
+{"id":"poetry-005","category":"poetry","language":"en-GB","tags":["line-breaks","caesura"],"text":"No wind — yet leaves awaken.\nNo rain — yet rooftops shine.\nThe city holds its quiet breath\nbetween your step and mine."}
+{"id":"poetry-006","category":"poetry","language":"en-US","tags":["line-breaks","repetition"],"text":"Carry the light to the doorway.\nCarry the light to the sea.\nCarry one spark through the darkness;\nbring one small morning to me."}
+{"id":"poetry-007","category":"poetry","language":"en-US","tags":["line-breaks","punctuation"],"text":"Red leaf, gold leaf—\nwhere will you land?\nOn the slow river,\nor here in my hand?"}
+{"id":"mixed-language-004","category":"mixed_language","language":"en-US","tags":["foreign-phrase","language-switch"],"text":"Luc opened the shutters and announced, \"Bonjour, friends; the rain has finally stopped.\""}
+{"id":"mixed-language-005","category":"mixed_language","language":"en-GB","tags":["foreign-phrase","diacritics"],"text":"Beside the empty bowl, someone had written gracias and à bientôt in blue ink."}
+{"id":"mixed-language-006","category":"mixed_language","language":"en-US","tags":["foreign-phrase","script-switch"],"text":"The card began with \"Namaste, नमस्ते,\" and ended with a warm welcome in English."}
+{"id":"mixed-language-007","category":"mixed_language","language":"en-US","tags":["foreign-phrase","proper-name"],"text":"Minseo said, \"Annyeong, Daniel,\" before pointing toward the Seoul train."}

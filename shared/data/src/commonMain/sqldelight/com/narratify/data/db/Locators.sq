@@ -1,0 +1,91 @@
+CREATE TABLE publication_locator (
+  id TEXT NOT NULL PRIMARY KEY,
+  publication_id TEXT NOT NULL,
+  resource_id TEXT,
+  resource_index INTEGER,
+  resource_progression REAL,
+  total_progression REAL,
+  structural_anchor TEXT,
+  text_exact TEXT,
+  text_prefix TEXT,
+  text_suffix TEXT,
+  pdf_page_index INTEGER,
+  pdf_character_start INTEGER,
+  pdf_character_end INTEGER,
+  pdf_rect_x REAL,
+  pdf_rect_y REAL,
+  pdf_rect_width REAL,
+  pdf_rect_height REAL,
+  audio_media_item_id TEXT,
+  audio_time_us INTEGER,
+  tts_chunk_id TEXT,
+  tts_source_word_index INTEGER,
+  tts_sample_offset INTEGER,
+  schema_version INTEGER NOT NULL DEFAULT 1,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (publication_id) REFERENCES publication(id) ON DELETE CASCADE,
+  CHECK (resource_progression IS NULL OR (resource_progression >= 0.0 AND resource_progression <= 1.0)),
+  CHECK (total_progression IS NULL OR (total_progression >= 0.0 AND total_progression <= 1.0))
+);
+
+CREATE INDEX publication_locator_publication_idx
+ON publication_locator(publication_id, updated_at DESC);
+
+selectLocatorById:
+SELECT * FROM publication_locator WHERE id = ?;
+
+insertLocator:
+INSERT INTO publication_locator(
+  id, publication_id, resource_id, resource_index, resource_progression,
+  total_progression, structural_anchor, text_exact, text_prefix, text_suffix,
+  pdf_page_index, pdf_character_start, pdf_character_end, pdf_rect_x,
+  pdf_rect_y, pdf_rect_width, pdf_rect_height, audio_media_item_id,
+  audio_time_us, tts_chunk_id, tts_source_word_index, tts_sample_offset,
+  schema_version, created_at, updated_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateLocator:
+UPDATE publication_locator SET
+  resource_id = ?, resource_index = ?, resource_progression = ?,
+  total_progression = ?, structural_anchor = ?, text_exact = ?,
+  text_prefix = ?, text_suffix = ?, pdf_page_index = ?,
+  pdf_character_start = ?, pdf_character_end = ?, pdf_rect_x = ?,
+  pdf_rect_y = ?, pdf_rect_width = ?, pdf_rect_height = ?,
+  audio_media_item_id = ?, audio_time_us = ?, tts_chunk_id = ?,
+  tts_source_word_index = ?, tts_sample_offset = ?, schema_version = ?,
+  updated_at = ?
+WHERE id = ? AND publication_id = ?;
+
+deleteUnreferencedLocators:
+DELETE FROM publication_locator
+WHERE publication_id = ?
+  AND id NOT IN (SELECT locator_id FROM reading_position WHERE publication_id = ?)
+  AND id NOT IN (SELECT locator_id FROM playback_snapshot WHERE publication_id = ?)
+  AND id NOT IN (SELECT locator_id FROM bookmark WHERE publication_id = ?)
+  AND id NOT IN (SELECT start_locator_id FROM highlight WHERE publication_id = ?)
+  AND id NOT IN (SELECT end_locator_id FROM highlight WHERE publication_id = ?);
+
+CREATE TABLE reading_position (
+  publication_id TEXT NOT NULL PRIMARY KEY,
+  locator_id TEXT NOT NULL,
+  modality TEXT NOT NULL,
+  rendering_context_json TEXT,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (publication_id) REFERENCES publication(id) ON DELETE CASCADE,
+  FOREIGN KEY (locator_id) REFERENCES publication_locator(id) ON DELETE RESTRICT
+);
+
+selectReadingPosition:
+SELECT publication_locator.*,
+       reading_position.modality,
+       reading_position.rendering_context_json,
+       reading_position.updated_at AS position_updated_at
+FROM reading_position
+JOIN publication_locator ON publication_locator.id = reading_position.locator_id
+WHERE reading_position.publication_id = ?;
+
+upsertReadingPosition:
+INSERT OR REPLACE INTO reading_position(
+  publication_id, locator_id, modality, rendering_context_json, updated_at
+) VALUES (?, ?, ?, ?, ?);

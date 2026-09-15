@@ -1,0 +1,36 @@
+-- Portable initial search cache. Framework SQLite on some supported Android
+-- versions lacks FTS5; this table can be migrated/rebuilt after a bundled
+-- FTS5-capable driver is selected.
+CREATE TABLE publication_search (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  publication_id TEXT NOT NULL,
+  resource_id TEXT NOT NULL,
+  resource_index INTEGER NOT NULL,
+  title TEXT NOT NULL DEFAULT '',
+  authors TEXT NOT NULL DEFAULT '',
+  body TEXT NOT NULL DEFAULT '',
+  FOREIGN KEY (publication_id) REFERENCES publication(id) ON DELETE CASCADE,
+  UNIQUE(publication_id, resource_id)
+);
+
+CREATE INDEX publication_search_publication_idx
+ON publication_search(publication_id, resource_index);
+
+searchPublications:
+SELECT publication_id, resource_id, resource_index,
+       substr(body, 1, 240) AS snippet,
+       0.0 AS relevance
+FROM publication_search
+WHERE title LIKE '%' || ? || '%' ESCAPE '\'
+   OR authors LIKE '%' || ? || '%' ESCAPE '\'
+   OR body LIKE '%' || ? || '%' ESCAPE '\'
+ORDER BY title, resource_index
+LIMIT ? OFFSET ?;
+
+insertSearchDocument:
+INSERT OR REPLACE INTO publication_search(
+  publication_id, resource_id, resource_index, title, authors, body
+) VALUES (?, ?, ?, ?, ?, ?);
+
+deleteSearchDocumentsForPublication:
+DELETE FROM publication_search WHERE publication_id = ?;

@@ -1,0 +1,64 @@
+name: Narratify
+options:
+  bundleIdPrefix: app.narratify
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 0.1.0
+    CODE_SIGN_STYLE: Automatic
+packages:
+  Readium:
+    url: https://github.com/readium/swift-toolkit.git
+    exactVersion: 3.11.0
+targets:
+  Narratify:
+    type: application
+    platform: iOS
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: Narratify
+        LSApplicationCategoryType: public.app-category.books
+        UIApplicationSupportsIndirectInputEvents: true
+        UILaunchScreen:
+          UIImageName: LaunchLogo
+          UIImageRespectsSafeAreaInsets: true
+        UIBackgroundModes:
+          - audio
+    sources:
+      - path: Sources
+    dependencies:
+      - package: Readium
+        product: ReadiumShared
+      - package: Readium
+        product: ReadiumStreamer
+      - package: Readium
+        product: ReadiumNavigator
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.narratify.ios
+        PRODUCT_NAME: Narratify
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+    scheme:
+      testTargets:
+        - NarratifyTests
+  NarratifyTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+      # The outline fixtures are shared with the Kotlin tests, so they live outside iosApp.
+      - path: ../test-fixtures/outline
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - target: Narratify
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.narratify.ios.tests
+        GENERATE_INFOPLIST_FILE: YES

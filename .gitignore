@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.pyc
+.gradle/
+.idea/
+/artifacts/
+**/build/
+local.properties
+*.xcuserstate
+xcuserdata/
+DerivedData/
+benchmarks/results/
+benchmarks/models/
+test-fixtures/tts/audio/
+.kotlin/

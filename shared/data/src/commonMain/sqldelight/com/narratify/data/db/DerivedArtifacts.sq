@@ -1,0 +1,59 @@
+CREATE TABLE derived_artifact (
+  id TEXT NOT NULL PRIMARY KEY,
+  publication_id TEXT,
+  kind TEXT NOT NULL,
+  storage_uri TEXT NOT NULL,
+  source_fingerprint TEXT NOT NULL,
+  producer TEXT NOT NULL,
+  producer_version TEXT NOT NULL,
+  schema_version INTEGER NOT NULL,
+  parameters_hash TEXT,
+  content_hash TEXT,
+  byte_size INTEGER,
+  state TEXT NOT NULL DEFAULT 'ready',
+  last_accessed_at INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (publication_id) REFERENCES publication(id) ON DELETE CASCADE
+);
+
+CREATE INDEX derived_artifact_publication_idx
+ON derived_artifact(publication_id, kind);
+
+CREATE INDEX derived_artifact_validation_idx
+ON derived_artifact(kind, producer, producer_version, schema_version, source_fingerprint);
+
+selectValidArtifact:
+SELECT * FROM derived_artifact
+WHERE publication_id = ? AND kind = ? AND producer = ?
+  AND producer_version = ? AND schema_version = ?
+  AND source_fingerprint = ? AND state = 'ready'
+  AND COALESCE(parameters_hash, '') = COALESCE(?, '')
+ORDER BY created_at DESC
+LIMIT 1;
+
+insertDerivedArtifact:
+INSERT INTO derived_artifact(
+  id, publication_id, kind, storage_uri, source_fingerprint, producer,
+  producer_version, schema_version, parameters_hash, content_hash,
+  byte_size, state, last_accessed_at, created_at, updated_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectArtifactById:
+SELECT * FROM derived_artifact WHERE id = ? AND state = 'ready';
+
+upsertCoverArtifact:
+INSERT OR REPLACE INTO derived_artifact(
+  id, publication_id, kind, storage_uri, source_fingerprint, producer,
+  producer_version, schema_version, parameters_hash, content_hash,
+  byte_size, state, last_accessed_at, created_at, updated_at
+) VALUES (?, ?, 'cover', ?, ?, 'narratify-import', '1', 1, NULL, ?, ?, 'ready', ?, ?, ?);
+
+invalidateArtifactsByProducer:
+UPDATE derived_artifact
+SET state = 'stale', updated_at = ?
+WHERE producer = ? AND
+      (producer_version <> ? OR schema_version <> ?);
+
+deleteStaleArtifacts:
+DELETE FROM derived_artifact WHERE state = 'stale';

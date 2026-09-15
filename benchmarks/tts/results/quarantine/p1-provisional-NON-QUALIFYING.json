@@ -1,0 +1,26 @@
+{
+  "status": "pass",
+  "selected_neural_system": "kokoro-af-heart",
+  "systems": {
+    "kokoro-af-heart": 4.85,
+    "apple-evan-enhanced": 3.6,
+    "apple-ava-premium": 3.2,
+    "kokoro-am-fenrir": 4.45,
+    "kokoro-af-bella": 3.9,
+    "kokoro-am-michael": 3.9
+  },
+  "margin": 0.5,
+  "reason": "kokoro-af-heart cleared the 0.5 margin against every OS voice",
+  "listeners": [
+    "Codex"
+  ],
+  "scored_clips": 120,
+  "audit_findings": [
+    {
+      "code": "duplicated_notes",
+      "blocking": true,
+      "detail": "106 of 120 notes repeat verbatim (88%); notes should describe individual clips"
+    }
+  ],
+  "audit_overridden": true
+}

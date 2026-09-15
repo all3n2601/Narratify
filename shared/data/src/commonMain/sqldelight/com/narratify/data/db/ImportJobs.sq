@@ -1,0 +1,55 @@
+CREATE TABLE import_job (
+  id TEXT NOT NULL PRIMARY KEY,
+  source_uri TEXT NOT NULL,
+  source_display_name TEXT,
+  source_byte_size INTEGER,
+  source_modified_at INTEGER,
+  publication_id TEXT,
+  state TEXT NOT NULL,
+  stage TEXT NOT NULL,
+  progress REAL NOT NULL DEFAULT 0.0,
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  error_code TEXT,
+  error_detail TEXT,
+  recoverable INTEGER NOT NULL DEFAULT 1 CHECK (recoverable IN (0, 1)),
+  work_state_json TEXT,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  completed_at INTEGER,
+  FOREIGN KEY (publication_id) REFERENCES publication(id) ON DELETE SET NULL,
+  CHECK (progress >= 0.0 AND progress <= 1.0)
+);
+
+CREATE INDEX import_job_state_idx
+ON import_job(state, updated_at);
+
+selectRecoverableImportJobs:
+SELECT * FROM import_job
+WHERE state IN ('queued', 'running', 'interrupted') AND recoverable = 1
+ORDER BY created_at;
+
+insertImportJob:
+INSERT INTO import_job(
+  id, source_uri, source_display_name, source_byte_size, source_modified_at,
+  publication_id, state, stage, progress, attempt_count, recoverable,
+  work_state_json, created_at, updated_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateImportJobProgress:
+UPDATE import_job SET
+  state = ?, stage = ?, progress = ?, attempt_count = ?,
+  work_state_json = ?, updated_at = ?
+WHERE id = ?;
+
+failImportJob:
+UPDATE import_job SET
+  state = 'failed', error_code = ?, error_detail = ?, recoverable = ?,
+  updated_at = ?
+WHERE id = ?;
+
+completeImportJob:
+UPDATE import_job SET
+  publication_id = ?, state = 'complete', stage = 'complete', progress = 1.0,
+  work_state_json = NULL, updated_at = ?, completed_at = ?
+WHERE id = ?;
+

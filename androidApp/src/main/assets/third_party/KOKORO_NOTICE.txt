@@ -1,0 +1,13 @@
+Kokoro-82M
+
+Copyright 2025 Kokoro-82M contributors.
+Licensed under the Apache License, Version 2.0.
+
+Source model: https://huggingface.co/hexgrad/Kokoro-82M
+ONNX conversion: https://github.com/thewh1teagle/kokoro-onnx
+Voice styles from onnx-community/Kokoro-82M-v1.0-ONNX:
+  af_heart, af_bella, af_nicole, am_michael, am_fenrir, am_puck
+Only styles Narratify is licensed to distribute are offered for download.
+
+The full Apache License 2.0 text is included alongside this notice as
+KOKORO_APACHE_2_0_LICENSE.txt.

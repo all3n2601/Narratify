@@ -1,0 +1,1 @@
+{"schema_version":1,"engine_id":"kokoro-82m-v1.0-fp32","adapter_executable":null,"runtime":"onnxruntime-mobile","runtime_version":null,"threads":4,"assets":[{"role":"model","path":null,"sha256":null},{"role":"voice","path":null,"sha256":null},{"role":"phonemizer-data","path":null,"sha256":null}],"license_inventory":"../../license-inventory.pending.json","network_allowed":false}

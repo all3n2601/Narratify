@@ -1,0 +1,37 @@
+name: Verify foundation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  shared-and-tts-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK used by shared modules
+        run: sdkmanager "platforms;android-37" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Verify shared contracts and database generation
+        run: ./gradlew check :androidApp:assembleDebug :shared:domain:compileAndroidMain :shared:data:compileAndroidMain
+      - name: Verify the TTS benchmark contract
+        run: |
+          python3 -m unittest discover -s benchmarks/tts/tests
+          python3 benchmarks/tts/validate_license_inventory.py benchmarks/tts/license-inventory.pending.json
+          python3 benchmarks/tts/validate_corpus.py
+          python3 benchmarks/tts/run_benchmark.py \
+            --adapter "python3 benchmarks/tts/mock_adapter.py" \
+            --engine-id mock \
+            --device-id ci \
+            --output benchmarks/tts/results/mock-ci.json
+          python3 benchmarks/tts/validate_result.py benchmarks/tts/results/mock-ci.json

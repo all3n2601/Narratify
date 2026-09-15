@@ -1,0 +1,8 @@
+A Short Work
+
+CHAPTER I
+
+Only one qualifying line appears in this document, which is not
+enough corroboration to trust the heuristic.
+
+So the outline should be empty rather than a single entry.

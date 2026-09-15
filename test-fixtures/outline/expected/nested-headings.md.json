@@ -1,0 +1,5 @@
+[
+  { "title": "Top Level", "depth": 0 },
+  { "title": "Skipped A Level", "depth": 2 },
+  { "title": "A Bold Chapter", "depth": 1 }
+]

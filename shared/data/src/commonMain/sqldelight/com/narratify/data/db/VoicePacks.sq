@@ -1,0 +1,50 @@
+CREATE TABLE voice_pack (
+  id TEXT NOT NULL PRIMARY KEY,
+  engine_id TEXT NOT NULL,
+  model_version TEXT NOT NULL,
+  manifest_version INTEGER NOT NULL,
+  display_name TEXT NOT NULL,
+  language_tags_json TEXT NOT NULL,
+  voices_json TEXT NOT NULL,
+  storage_uri TEXT,
+  expected_sha256 TEXT NOT NULL,
+  installed_sha256 TEXT,
+  byte_size INTEGER NOT NULL,
+  minimum_runtime_version TEXT NOT NULL,
+  state TEXT NOT NULL,
+  download_bytes INTEGER NOT NULL DEFAULT 0,
+  license_id TEXT NOT NULL,
+  license_notice TEXT,
+  installed_at INTEGER,
+  last_verified_at INTEGER,
+  updated_at INTEGER NOT NULL,
+  CHECK (download_bytes >= 0 AND download_bytes <= byte_size)
+);
+
+CREATE INDEX voice_pack_state_idx
+ON voice_pack(state, language_tags_json);
+
+selectInstalledVoicePacks:
+SELECT * FROM voice_pack
+WHERE state = 'installed'
+ORDER BY display_name;
+
+selectVoicePackById:
+SELECT * FROM voice_pack WHERE id = ?;
+
+upsertVoicePack:
+INSERT OR REPLACE INTO voice_pack(
+  id, engine_id, model_version, manifest_version, display_name,
+  language_tags_json, voices_json, storage_uri, expected_sha256,
+  installed_sha256, byte_size, minimum_runtime_version, state,
+  download_bytes, license_id, license_notice, installed_at,
+  last_verified_at, updated_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateVoicePackProgress:
+UPDATE voice_pack
+SET state = ?, download_bytes = ?, storage_uri = ?, updated_at = ?
+WHERE id = ?;
+
+deleteVoicePackRecord:
+DELETE FROM voice_pack WHERE id = ?;

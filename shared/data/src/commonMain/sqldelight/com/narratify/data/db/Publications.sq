@@ -1,0 +1,75 @@
+CREATE TABLE publication (
+  id TEXT NOT NULL PRIMARY KEY,
+  fingerprint TEXT NOT NULL UNIQUE,
+  format TEXT NOT NULL,
+  title TEXT NOT NULL,
+  sort_title TEXT,
+  subtitle TEXT,
+  authors_json TEXT NOT NULL DEFAULT '[]',
+  identifiers_json TEXT NOT NULL DEFAULT '{}',
+  language_tags_json TEXT NOT NULL DEFAULT '[]',
+  description TEXT,
+  cover_artifact_id TEXT,
+  resource_count INTEGER NOT NULL DEFAULT 0,
+  duration_us INTEGER,
+  import_state TEXT NOT NULL DEFAULT 'pending',
+  last_opened_at INTEGER,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL,
+  deleted_at INTEGER,
+  schema_version INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE INDEX publication_last_opened_idx
+ON publication(last_opened_at DESC);
+
+CREATE INDEX publication_import_state_idx
+ON publication(import_state);
+
+selectPublicationById:
+SELECT * FROM publication WHERE id = ? AND deleted_at IS NULL;
+
+selectPublicationByFingerprint:
+SELECT * FROM publication WHERE fingerprint = ? AND deleted_at IS NULL;
+
+selectLibrary:
+SELECT *
+FROM publication
+WHERE deleted_at IS NULL AND import_state = 'ready'
+ORDER BY COALESCE(last_opened_at, created_at) DESC;
+
+selectHiddenLibrary:
+SELECT *
+FROM publication
+WHERE deleted_at IS NULL AND import_state = 'hidden'
+ORDER BY COALESCE(last_opened_at, created_at) DESC;
+
+insertPublication:
+INSERT INTO publication(
+  id, fingerprint, format, title, sort_title, subtitle, authors_json,
+  identifiers_json, language_tags_json, description, resource_count,
+  duration_us, import_state, created_at, updated_at, schema_version
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updatePublicationImportState:
+UPDATE publication
+SET import_state = ?, updated_at = ?
+WHERE id = ?;
+
+markPublicationOpened:
+UPDATE publication
+SET last_opened_at = ?, updated_at = ?
+WHERE id = ?;
+
+updatePublicationCover:
+UPDATE publication
+SET cover_artifact_id = ?, updated_at = ?
+WHERE id = ?;
+
+softDeletePublication:
+UPDATE publication
+SET deleted_at = ?, updated_at = ?
+WHERE id = ?;
+
+deletePublication:
+DELETE FROM publication WHERE id = ?;

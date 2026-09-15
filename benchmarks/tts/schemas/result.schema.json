@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narratify.local/schemas/tts-benchmark-result-v1.json",
+  "title": "Narratify TTS benchmark result",
+  "type": "object",
+  "required": ["schema_version", "run", "device", "engine", "capabilities", "measurements", "summary", "gate_evaluation"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "run": {
+      "type": "object",
+      "required": ["id", "started_at_utc", "corpus_revision", "passage_count", "repetitions", "command"],
+      "properties": {
+        "id": {"type": "string"},
+        "started_at_utc": {"type": "string", "format": "date-time"},
+        "corpus_revision": {"type": "string"},
+        "passage_count": {"type": "integer", "minimum": 1},
+        "repetitions": {"type": "integer", "minimum": 1},
+        "command": {"type": "string"},
+        "notes": {"type": "string"},
+        "is_mock": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "device": {
+      "type": "object",
+      "required": ["id", "platform", "model", "os_version", "power_state", "screen_state"],
+      "properties": {
+        "id": {"type": "string"}, "platform": {"type": "string"}, "model": {"type": "string"},
+        "os_version": {"type": "string"}, "soc": {"type": "string"}, "ram_mb": {"type": ["number", "null"]},
+        "power_state": {"type": "string"}, "screen_state": {"type": "string"},
+        "ambient_temperature_c": {"type": ["number", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "engine": {
+      "type": "object",
+      "required": ["id", "name", "version", "runtime", "model_sha256", "voice_id", "quantization", "license_review_status"],
+      "additionalProperties": true
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["streaming", "word_timings", "timing_source", "offline_verified"],
+      "properties": {
+        "streaming": {"type": "boolean"}, "word_timings": {"type": "boolean"},
+        "timing_source": {"type": "string"}, "offline_verified": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "measurements": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["passage_id", "category", "repetition", "characters", "words", "audio_duration_ms", "wall_synthesis_ms", "rtf", "first_audio_ms", "peak_rss_mb", "word_timing_count"],
+        "additionalProperties": true
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["cold_initialization_ms", "rtf_p50", "rtf_p95", "warm_first_audio_p95_ms", "peak_rss_mb", "underruns", "word_start_error_median_ms", "word_start_error_p95_ms"],
+      "additionalProperties": true
+    },
+    "thermal_samples": {"type": "array", "items": {"type": "object"}},
+    "license_inventory": {"type": "array", "items": {"type": "object"}},
+    "gate_evaluation": {
+      "type": "object",
+      "required": ["status", "checks"],
+      "properties": {
+        "status": {"enum": ["pass", "fail", "incomplete", "not-applicable"]},
+        "checks": {"type": "array", "items": {"type": "object", "required": ["name", "status"], "additionalProperties": true}}
+      }
+    }
+  },
+  "additionalProperties": false
+}

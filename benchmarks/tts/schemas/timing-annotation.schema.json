@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://narratify.local/schemas/timing-annotation-v1.json",
+  "title": "Narratify audible word-onset annotation",
+  "type": "object",
+  "required": ["schema_version", "passage_id", "status", "reference_audio", "annotator", "words"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "passage_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["pending", "annotated", "reviewed", "rejected"]},
+    "reference_audio": {
+      "type": "object",
+      "required": ["path", "sha256", "sample_rate_hz", "channels"],
+      "properties": {
+        "path": {"type": ["string", "null"]},
+        "sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+        "sample_rate_hz": {"type": ["integer", "null"], "minimum": 8000},
+        "channels": {"type": ["integer", "null"], "minimum": 1, "maximum": 2}
+      },
+      "additionalProperties": false
+    },
+    "annotator": {
+      "type": "object",
+      "required": ["id", "annotated_at_utc", "reviewer_id", "reviewed_at_utc"],
+      "properties": {
+        "id": {"type": ["string", "null"]},
+        "annotated_at_utc": {"type": ["string", "null"], "format": "date-time"},
+        "reviewer_id": {"type": ["string", "null"]},
+        "reviewed_at_utc": {"type": ["string", "null"], "format": "date-time"}
+      },
+      "additionalProperties": false
+    },
+    "words": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text", "text_start", "text_end", "onset_sample", "confidence"],
+        "properties": {
+          "text": {"type": "string"},
+          "text_start": {"type": "integer", "minimum": 0},
+          "text_end": {"type": "integer", "minimum": 1},
+          "onset_sample": {"type": "integer", "minimum": 0},
+          "confidence": {"enum": ["high", "medium", "low"]},
+          "note": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "notes": {"type": "string"}
+  },
+  "additionalProperties": false
+}

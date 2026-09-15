@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "corpus_revision": "narratify-tts-v1",
+  "required_devices": [
+    {
+      "id": "iphone-12",
+      "description": "iPhone 12 or newer baseline; report exact model and OS"
+    },
+    {
+      "id": "galaxy-a53-6gb",
+      "description": "Samsung Galaxy A53-class Android phone with 6 GB RAM"
+    },
+    {
+      "id": "snapdragon-778g-class",
+      "description": "Android device using Snapdragon 778G/780G-class CPU"
+    }
+  ],
+  "required_engine_variants": [
+    "kokoro-82m-v1.0-fp32",
+    "kokoro-82m-v1.0-fp16"
+  ],
+  "passage_policy": {
+    "minimum_passages_for_decision": 100,
+    "minimum_categories_for_decision": 12,
+    "warm_repetitions": 3,
+    "deterministic_shuffle_seed": 2601,
+    "playback_rates": [
+      1.0,
+      2.0
+    ]
+  },
+  "thermal_policy": {
+    "duration_minutes": 60,
+    "screen_off": true,
+    "sample_interval_seconds": 60,
+    "evaluate_sustained_window_after_minutes": 30
+  },
+  "hard_gates": {
+    "sustained_p95_rtf_max": 0.75,
+    "warm_first_audio_p95_ms_max": 900,
+    "cold_initialization_ms_max": 2500,
+    "peak_rss_mb_max": 900,
+    "thermal_underruns_max": 0,
+    "word_start_error_median_ms_max": 60,
+    "word_start_error_p95_ms_max": 120,
+    "commercial_license_review_required": true,
+    "offline_execution_required": true
+  }
+}

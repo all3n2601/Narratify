@@ -1,0 +1,27 @@
+name: Neural voice release gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  commercial-license-approval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK used by the app
+        run: sdkmanager "platforms;android-37" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Require complete commercial approval
+        run: python3 benchmarks/tts/validate_license_inventory.py benchmarks/tts/license-inventory.pending.json --require-approved
+      - name: Verify app and pack contracts
+        run: |
+          python3 -m unittest discover -s benchmarks/tts/tests
+          ./gradlew :androidApp:testDebugUnitTest

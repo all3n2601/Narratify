@@ -1,0 +1,43 @@
+CREATE TABLE playback_snapshot (
+  publication_id TEXT NOT NULL PRIMARY KEY,
+  locator_id TEXT NOT NULL,
+  modality TEXT NOT NULL,
+  playback_state TEXT NOT NULL,
+  media_position_us INTEGER,
+  rendered_sample_position INTEGER,
+  playback_rate REAL NOT NULL DEFAULT 1.0,
+  buffered_duration_us INTEGER NOT NULL DEFAULT 0,
+  voice_pack_id TEXT,
+  voice_id TEXT,
+  active_media_item_id TEXT,
+  updated_at INTEGER NOT NULL,
+  schema_version INTEGER NOT NULL DEFAULT 1,
+  FOREIGN KEY (publication_id) REFERENCES publication(id) ON DELETE CASCADE,
+  FOREIGN KEY (locator_id) REFERENCES publication_locator(id) ON DELETE RESTRICT,
+  CHECK (playback_rate > 0.0),
+  CHECK (buffered_duration_us >= 0)
+);
+
+selectPlaybackSnapshot:
+SELECT playback_snapshot.*,
+       publication_locator.resource_id,
+       publication_locator.resource_index,
+       publication_locator.resource_progression,
+       publication_locator.total_progression,
+       publication_locator.structural_anchor,
+       publication_locator.text_exact,
+       publication_locator.text_prefix,
+       publication_locator.text_suffix
+FROM playback_snapshot
+JOIN publication_locator ON publication_locator.id = playback_snapshot.locator_id
+WHERE playback_snapshot.publication_id = ?;
+
+upsertPlaybackSnapshot:
+INSERT OR REPLACE INTO playback_snapshot(
+  publication_id, locator_id, modality, playback_state, media_position_us,
+  rendered_sample_position, playback_rate, buffered_duration_us,
+  voice_pack_id, voice_id, active_media_item_id, updated_at, schema_version
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deletePlaybackSnapshot:
+DELETE FROM playback_snapshot WHERE publication_id = ?;

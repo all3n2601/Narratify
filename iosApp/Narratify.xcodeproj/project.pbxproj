@@ -1,0 +1,575 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0491A7B9B2D48F28C1898B4F /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678CD6A7F4DB500E8E711A4 /* AppSettings.swift */; };
+		0700D446E288700901A25683 /* SpeechRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A802624A71FC561457325E /* SpeechRuntimeTests.swift */; };
+		0DAB2E684A59147E9BF3F477 /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162CD08519ADDFD4F1E86E26 /* AppSettingsTests.swift */; };
+		163E3B481AFED49DEC1171EB /* EPUBNarrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C376E683911B7B876C3CF61B /* EPUBNarrationController.swift */; };
+		198DF9A64D53EEC4E27350A3 /* ReaderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFFA82022BBB0E3C9D15092 /* ReaderScreen.swift */; };
+		2AF0F8F10410167B60EBFC21 /* LibraryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E26C6E582183C16EE6D15C /* LibraryStoreTests.swift */; };
+		2B854D3E1CD5B483E1F44515 /* outline in Resources */ = {isa = PBXBuildFile; fileRef = 138B056DAC8DC0C872C4882E /* outline */; };
+		2D7997837B79B0B4F5409112 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A24D8B234CDA6F51693B80D /* Navigation.swift */; };
+		31E495F048C181BEF7084301 /* ReadiumNavigator in Frameworks */ = {isa = PBXBuildFile; productRef = 54975124F993D371E9E89C17 /* ReadiumNavigator */; };
+		419495251FE605780B6D72F7 /* BookOutline.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA786CA8FE9D426E885C7A7 /* BookOutline.swift */; };
+		50825A76916CBBDB3561DD16 /* LibraryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D497B87C0C146D86996559C /* LibraryScreen.swift */; };
+		5A9A13035F8843863510FE39 /* DestinationScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77B0250F27A0F4FD9E28D58 /* DestinationScreens.swift */; };
+		5E078B3B267B5C1998F87FC2 /* EPUBReaderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A1C3F866C0BE9928C57CCD /* EPUBReaderScreen.swift */; };
+		604CB48C1779BD8B07434651 /* CatalogScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69CBB5348DD466E939E9B4D0 /* CatalogScreen.swift */; };
+		6F94169F6DEFD848FCA44024 /* BookOutlineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A039936E2F5D50826DDE7EB /* BookOutlineTests.swift */; };
+		74CFFF059F9D24AA7017BF61 /* BookCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F14A388AD91C0EC3D5E87A /* BookCatalogTests.swift */; };
+		79D7F28C752504949DA4C764 /* OutlineSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E60B8A24398A6A41ABB192 /* OutlineSidebar.swift */; };
+		92D059E223E0856B02E37ECE /* ReadiumShared in Frameworks */ = {isa = PBXBuildFile; productRef = 57111C7C057B958A6F2C6BE6 /* ReadiumShared */; };
+		9F16E75F25B79F3AC3CF723D /* NarratifyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A001C5A1A14F8697FB64493 /* NarratifyApp.swift */; };
+		AE0862F1F87B89B5E37FF2F8 /* LibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A1FB6F92856FA346929549 /* LibraryStore.swift */; };
+		BDC36B080EAC2A2E4C12038A /* NeuralVoicePackInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98FD9084AF3C35AE111B7441 /* NeuralVoicePackInstaller.swift */; };
+		C0E701C8E2D44A51A2FBDE3C /* EPUBNarrationControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F0EB6BB272734B21BDEC8B /* EPUBNarrationControllerTests.swift */; };
+		C4820250AD0122AEF46A3B9C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BCACC1643C6490718B09710 /* Assets.xcassets */; };
+		D5A801402B136AC84F2FBACC /* BookCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483FDED6F6C42A04E829817E /* BookCatalog.swift */; };
+		E28FA00FF93EA95D3E3EF7C5 /* SpeechRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93390554FBF9F3EEE15EE238 /* SpeechRuntime.swift */; };
+		E86732B87A5FC8FD46D2CAC7 /* ReadiumStreamer in Frameworks */ = {isa = PBXBuildFile; productRef = 9445E4543E8E1FE23130FD9A /* ReadiumStreamer */; };
+		F7CF15C50F46BB65786A81A7 /* OutlineFixtureParityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F41D2ADB9DE9B058C9752E /* OutlineFixtureParityTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A8675952D3007F7611E6A23B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C77AA62460E46B8CFA3D3D8D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B02C91860DA146D13F612FE5;
+			remoteInfo = Narratify;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		02F41D2ADB9DE9B058C9752E /* OutlineFixtureParityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineFixtureParityTests.swift; sourceTree = "<group>"; };
+		138B056DAC8DC0C872C4882E /* outline */ = {isa = PBXFileReference; lastKnownFileType = folder; name = outline; path = "../test-fixtures/outline"; sourceTree = SOURCE_ROOT; };
+		162CD08519ADDFD4F1E86E26 /* AppSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsTests.swift; sourceTree = "<group>"; };
+		20A802624A71FC561457325E /* SpeechRuntimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRuntimeTests.swift; sourceTree = "<group>"; };
+		2A24D8B234CDA6F51693B80D /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
+		37E60B8A24398A6A41ABB192 /* OutlineSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineSidebar.swift; sourceTree = "<group>"; };
+		44F0EB6BB272734B21BDEC8B /* EPUBNarrationControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBNarrationControllerTests.swift; sourceTree = "<group>"; };
+		483FDED6F6C42A04E829817E /* BookCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCatalog.swift; sourceTree = "<group>"; };
+		4D497B87C0C146D86996559C /* LibraryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryScreen.swift; sourceTree = "<group>"; };
+		61A1FB6F92856FA346929549 /* LibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStore.swift; sourceTree = "<group>"; };
+		69A1C3F866C0BE9928C57CCD /* EPUBReaderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBReaderScreen.swift; sourceTree = "<group>"; };
+		69CBB5348DD466E939E9B4D0 /* CatalogScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogScreen.swift; sourceTree = "<group>"; };
+		7A001C5A1A14F8697FB64493 /* NarratifyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NarratifyApp.swift; sourceTree = "<group>"; };
+		81E26C6E582183C16EE6D15C /* LibraryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryStoreTests.swift; sourceTree = "<group>"; };
+		93390554FBF9F3EEE15EE238 /* SpeechRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRuntime.swift; sourceTree = "<group>"; };
+		98FD9084AF3C35AE111B7441 /* NeuralVoicePackInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeuralVoicePackInstaller.swift; sourceTree = "<group>"; };
+		9A039936E2F5D50826DDE7EB /* BookOutlineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookOutlineTests.swift; sourceTree = "<group>"; };
+		9BCACC1643C6490718B09710 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A0F14A388AD91C0EC3D5E87A /* BookCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCatalogTests.swift; sourceTree = "<group>"; };
+		BCA786CA8FE9D426E885C7A7 /* BookOutline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookOutline.swift; sourceTree = "<group>"; };
+		C376E683911B7B876C3CF61B /* EPUBNarrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBNarrationController.swift; sourceTree = "<group>"; };
+		C403A57582CACE059CF38A91 /* NarratifyTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = NarratifyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C77B0250F27A0F4FD9E28D58 /* DestinationScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationScreens.swift; sourceTree = "<group>"; };
+		CAFFA82022BBB0E3C9D15092 /* ReaderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderScreen.swift; sourceTree = "<group>"; };
+		E678CD6A7F4DB500E8E711A4 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		F7D8E2B7024126C1A0E92AF3 /* Narratify.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Narratify.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD94D6FC3CCE3224D7BE951C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		949198C817651B52A942D680 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				92D059E223E0856B02E37ECE /* ReadiumShared in Frameworks */,
+				E86732B87A5FC8FD46D2CAC7 /* ReadiumStreamer in Frameworks */,
+				31E495F048C181BEF7084301 /* ReadiumNavigator in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		30C269D1DFBC180E7030811C = {
+			isa = PBXGroup;
+			children = (
+				BE1BD1859637118B88438E96 /* Narratify */,
+				67F721F47C9B2C6A42997B84 /* Sources */,
+				5E86B00C13AF07008A3B7283 /* Tests */,
+				F9FC78DCC81D8D73A5356DE5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5E86B00C13AF07008A3B7283 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				162CD08519ADDFD4F1E86E26 /* AppSettingsTests.swift */,
+				A0F14A388AD91C0EC3D5E87A /* BookCatalogTests.swift */,
+				9A039936E2F5D50826DDE7EB /* BookOutlineTests.swift */,
+				44F0EB6BB272734B21BDEC8B /* EPUBNarrationControllerTests.swift */,
+				81E26C6E582183C16EE6D15C /* LibraryStoreTests.swift */,
+				02F41D2ADB9DE9B058C9752E /* OutlineFixtureParityTests.swift */,
+				20A802624A71FC561457325E /* SpeechRuntimeTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		67F721F47C9B2C6A42997B84 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				E678CD6A7F4DB500E8E711A4 /* AppSettings.swift */,
+				9BCACC1643C6490718B09710 /* Assets.xcassets */,
+				483FDED6F6C42A04E829817E /* BookCatalog.swift */,
+				BCA786CA8FE9D426E885C7A7 /* BookOutline.swift */,
+				69CBB5348DD466E939E9B4D0 /* CatalogScreen.swift */,
+				C77B0250F27A0F4FD9E28D58 /* DestinationScreens.swift */,
+				C376E683911B7B876C3CF61B /* EPUBNarrationController.swift */,
+				69A1C3F866C0BE9928C57CCD /* EPUBReaderScreen.swift */,
+				FD94D6FC3CCE3224D7BE951C /* Info.plist */,
+				4D497B87C0C146D86996559C /* LibraryScreen.swift */,
+				61A1FB6F92856FA346929549 /* LibraryStore.swift */,
+				7A001C5A1A14F8697FB64493 /* NarratifyApp.swift */,
+				2A24D8B234CDA6F51693B80D /* Navigation.swift */,
+				98FD9084AF3C35AE111B7441 /* NeuralVoicePackInstaller.swift */,
+				37E60B8A24398A6A41ABB192 /* OutlineSidebar.swift */,
+				CAFFA82022BBB0E3C9D15092 /* ReaderScreen.swift */,
+				93390554FBF9F3EEE15EE238 /* SpeechRuntime.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		68EE5C84F6A260A5154904A7 /* test-fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				138B056DAC8DC0C872C4882E /* outline */,
+			);
+			path = "test-fixtures";
+			sourceTree = "<group>";
+		};
+		BE1BD1859637118B88438E96 /* Narratify */ = {
+			isa = PBXGroup;
+			children = (
+				68EE5C84F6A260A5154904A7 /* test-fixtures */,
+			);
+			name = Narratify;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		F9FC78DCC81D8D73A5356DE5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F7D8E2B7024126C1A0E92AF3 /* Narratify.app */,
+				C403A57582CACE059CF38A91 /* NarratifyTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		39F6EEE9E24D367FC6FAEFCD /* NarratifyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 63595EB22AC55224D7EB8897 /* Build configuration list for PBXNativeTarget "NarratifyTests" */;
+			buildPhases = (
+				F21889BEA7D880017927F03C /* Sources */,
+				376FFB0485DDDC687D00DB8C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1A1704C378963868C4810377 /* PBXTargetDependency */,
+			);
+			name = NarratifyTests;
+			packageProductDependencies = (
+			);
+			productName = NarratifyTests;
+			productReference = C403A57582CACE059CF38A91 /* NarratifyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B02C91860DA146D13F612FE5 /* Narratify */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40C130EE67804E69BF026123 /* Build configuration list for PBXNativeTarget "Narratify" */;
+			buildPhases = (
+				75DEF6EC6FD5B8AA764EECDC /* Sources */,
+				FB59FDD68762E7667C6DFAA1 /* Resources */,
+				949198C817651B52A942D680 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Narratify;
+			packageProductDependencies = (
+				57111C7C057B958A6F2C6BE6 /* ReadiumShared */,
+				9445E4543E8E1FE23130FD9A /* ReadiumStreamer */,
+				54975124F993D371E9E89C17 /* ReadiumNavigator */,
+			);
+			productName = Narratify;
+			productReference = F7D8E2B7024126C1A0E92AF3 /* Narratify.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C77AA62460E46B8CFA3D3D8D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					39F6EEE9E24D367FC6FAEFCD = {
+						ProvisioningStyle = Automatic;
+					};
+					B02C91860DA146D13F612FE5 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A1BE167E2F64E842FB96258E /* Build configuration list for PBXProject "Narratify" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 30C269D1DFBC180E7030811C;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A768AC186A0A781D3A8F50EB /* XCRemoteSwiftPackageReference "swift-toolkit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F9FC78DCC81D8D73A5356DE5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B02C91860DA146D13F612FE5 /* Narratify */,
+				39F6EEE9E24D367FC6FAEFCD /* NarratifyTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		376FFB0485DDDC687D00DB8C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B854D3E1CD5B483E1F44515 /* outline in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB59FDD68762E7667C6DFAA1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4820250AD0122AEF46A3B9C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		75DEF6EC6FD5B8AA764EECDC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0491A7B9B2D48F28C1898B4F /* AppSettings.swift in Sources */,
+				D5A801402B136AC84F2FBACC /* BookCatalog.swift in Sources */,
+				419495251FE605780B6D72F7 /* BookOutline.swift in Sources */,
+				604CB48C1779BD8B07434651 /* CatalogScreen.swift in Sources */,
+				5A9A13035F8843863510FE39 /* DestinationScreens.swift in Sources */,
+				163E3B481AFED49DEC1171EB /* EPUBNarrationController.swift in Sources */,
+				5E078B3B267B5C1998F87FC2 /* EPUBReaderScreen.swift in Sources */,
+				50825A76916CBBDB3561DD16 /* LibraryScreen.swift in Sources */,
+				AE0862F1F87B89B5E37FF2F8 /* LibraryStore.swift in Sources */,
+				9F16E75F25B79F3AC3CF723D /* NarratifyApp.swift in Sources */,
+				2D7997837B79B0B4F5409112 /* Navigation.swift in Sources */,
+				BDC36B080EAC2A2E4C12038A /* NeuralVoicePackInstaller.swift in Sources */,
+				79D7F28C752504949DA4C764 /* OutlineSidebar.swift in Sources */,
+				198DF9A64D53EEC4E27350A3 /* ReaderScreen.swift in Sources */,
+				E28FA00FF93EA95D3E3EF7C5 /* SpeechRuntime.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F21889BEA7D880017927F03C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0DAB2E684A59147E9BF3F477 /* AppSettingsTests.swift in Sources */,
+				74CFFF059F9D24AA7017BF61 /* BookCatalogTests.swift in Sources */,
+				6F94169F6DEFD848FCA44024 /* BookOutlineTests.swift in Sources */,
+				C0E701C8E2D44A51A2FBDE3C /* EPUBNarrationControllerTests.swift in Sources */,
+				2AF0F8F10410167B60EBFC21 /* LibraryStoreTests.swift in Sources */,
+				F7CF15C50F46BB65786A81A7 /* OutlineFixtureParityTests.swift in Sources */,
+				0700D446E288700901A25683 /* SpeechRuntimeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1A1704C378963868C4810377 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B02C91860DA146D13F612FE5 /* Narratify */;
+			targetProxy = A8675952D3007F7611E6A23B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0686FB76C756474C623F0666 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.narratify.ios.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Narratify.app/Narratify";
+			};
+			name = Debug;
+		};
+		2455125715EF9C455698220C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		5E9C0B68C2F950E13901F1AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Sources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.narratify.ios;
+				PRODUCT_NAME = Narratify;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7D40B1B0116CC1BE24D54A13 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Sources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.narratify.ios;
+				PRODUCT_NAME = Narratify;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8A0EE00A7B55C34652A7599D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.narratify.ios.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Narratify.app/Narratify";
+			};
+			name = Release;
+		};
+		EEA3F91CD178057E7A59FAA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40C130EE67804E69BF026123 /* Build configuration list for PBXNativeTarget "Narratify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E9C0B68C2F950E13901F1AF /* Debug */,
+				7D40B1B0116CC1BE24D54A13 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		63595EB22AC55224D7EB8897 /* Build configuration list for PBXNativeTarget "NarratifyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0686FB76C756474C623F0666 /* Debug */,
+				8A0EE00A7B55C34652A7599D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A1BE167E2F64E842FB96258E /* Build configuration list for PBXProject "Narratify" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EEA3F91CD178057E7A59FAA2 /* Debug */,
+				2455125715EF9C455698220C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A768AC186A0A781D3A8F50EB /* XCRemoteSwiftPackageReference "swift-toolkit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/readium/swift-toolkit.git";
+			requirement = {
+				kind = exactVersion;
+				version = 3.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		54975124F993D371E9E89C17 /* ReadiumNavigator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A768AC186A0A781D3A8F50EB /* XCRemoteSwiftPackageReference "swift-toolkit" */;
+			productName = ReadiumNavigator;
+		};
+		57111C7C057B958A6F2C6BE6 /* ReadiumShared */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A768AC186A0A781D3A8F50EB /* XCRemoteSwiftPackageReference "swift-toolkit" */;
+			productName = ReadiumShared;
+		};
+		9445E4543E8E1FE23130FD9A /* ReadiumStreamer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A768AC186A0A781D3A8F50EB /* XCRemoteSwiftPackageReference "swift-toolkit" */;
+			productName = ReadiumStreamer;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C77AA62460E46B8CFA3D3D8D /* Project object */;
+}

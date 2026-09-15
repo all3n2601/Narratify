@@ -1,0 +1,7 @@
+This document is only prose. It mentions a chapter of history in
+passing, but never as a heading of its own.
+
+There is nothing here that a reasonable heuristic should promote
+into a table of contents.
+
+Not a single line stands alone as a section marker.
