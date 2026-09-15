@@ -3,6 +3,7 @@ package app.narratify
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.Paint
 import android.graphics.Path
@@ -384,6 +385,50 @@ fun Context.styledText(
 /** The masthead kicker used above every page title. */
 fun Context.eyebrow(value: String, color: Int): TextView =
     styledText(value.uppercase(), Type.MICRO, color, Typeface.BOLD, tracking = Type.TRACKING_EYEBROW)
+
+/**
+ * A tappable settings-style row: a bold title over a muted detail line. Originally private to
+ * `LibraryScreen`'s book-options sheet; moved here (Task 7) so the narration mapping screen can
+ * use the same vocabulary for "pick one of these" instead of a second copy of the row.
+ */
+fun Context.bookActionRow(
+    palette: AppPalette,
+    title: String,
+    detail: String,
+    color: Int,
+    action: () -> Unit,
+): LinearLayout = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+    setPadding(dpi(Gap.SM), dpi(Gap.MD), dpi(Gap.SM), dpi(Gap.MD))
+    background = surfaceShape(Color.TRANSPARENT, Radius.INPUT)
+    isClickable = true
+    isFocusable = true
+    contentDescription = "$title. $detail"
+    addView(styledText(title, Type.BODY, color, Typeface.BOLD))
+    addView(
+        styledText(detail, Type.MICRO, palette.muted),
+        LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+            topMargin = dpi(Gap.XXS)
+        },
+    )
+    setOnClickListener { action() }
+}
+
+/**
+ * The one filled accent action a screen reaches for. Originally private to `LibraryScreen`; moved
+ * here (Task 7) so the narration mapping screen's Save/Cancel and offset controls share it instead
+ * of duplicating the fill, padding, and 48dp touch minimum.
+ */
+fun Context.primaryButton(palette: AppPalette, title: String, action: () -> Unit): TextView =
+    styledText(title, Type.BODY, palette.onAccent, Typeface.BOLD).apply {
+        gravity = Gravity.CENTER
+        background = surfaceShape(palette.accent, Radius.INPUT)
+        setPadding(dpi(Gap.XL), dpi(Gap.SM), dpi(Gap.XL), dpi(Gap.SM))
+        minHeight = dpi(48)
+        isClickable = true
+        isFocusable = true
+        setOnClickListener { action() }
+    }
 
 /**
  * Wraps a small control so it still meets the 48dp touch minimum without growing visually.

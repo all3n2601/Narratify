@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import app.narratify.playback.ChapterMapping
 
 class MainActivity : Activity() {
     private lateinit var repository: LocalLibraryRepository
@@ -187,10 +188,42 @@ class MainActivity : Activity() {
             .onFailure { showLibraryWithError(it.message ?: "The narration could not be removed.") }
     }
 
-    /** Stub until Task 7 adds the mapping review screen; for now just return to the library. */
     private fun showNarrationMapping(attachment: NarrationAttachment) {
-        showLibrary()
+        val book = repository.books().firstOrNull { it.id == attachment.bookId } ?: return
+        val spineTitles = narrationSpineTitles(book)
+        if (attachment.chapters.isEmpty()) {
+            // Nothing to match, so do not show a review screen with one meaningless row.
+            repository.saveChapters(book.id, ChapterMapping(emptyList()))
+            showSection(AppSection.LIBRARY)
+            return
+        }
+        section = AppSection.LIBRARY
+        setContentView(NarrationMappingScreen(
+            context = this,
+            bookTitle = book.title,
+            narrationName = attachment.displayName,
+            spineTitles = spineTitles,
+            initialMapping = ChapterMapping.positional(attachment.chapters, spineTitles.size),
+            onSave = { mapping ->
+                repository.saveChapters(book.id, mapping)
+                showSection(AppSection.LIBRARY)
+            },
+            onCancel = { showSection(AppSection.LIBRARY) },
+        ))
+        applyWindowPalette(enchantedLibraryPalette())
     }
+
+    /**
+     * The book's sections, indexed the way a spine index is.
+     *
+     * Reuses the outline the reader already builds rather than parsing the package document
+     * again: two parsers would eventually disagree about what section three is, and the mapping a
+     * reader corrected would start pointing somewhere else.
+     */
+    private fun narrationSpineTitles(book: LocalBook): List<String> =
+        runCatching { repository.outlineEntries(book) }
+            .getOrDefault(emptyList())
+            .map(OutlineEntry::title)
 
     private fun showLibraryWithError(message: String) {
         section = AppSection.LIBRARY

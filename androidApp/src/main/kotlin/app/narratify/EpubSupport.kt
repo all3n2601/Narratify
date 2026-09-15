@@ -8,6 +8,7 @@ import java.io.File
 import java.util.zip.ZipFile
 import kotlinx.coroutines.runBlocking
 import org.readium.r2.navigator.epub.EpubNavigatorFactory
+import org.readium.r2.shared.publication.Link
 import org.readium.r2.shared.publication.Locator
 import org.readium.r2.shared.publication.Publication
 import org.readium.r2.shared.publication.allAreHtml
@@ -59,6 +60,28 @@ class EpubService(context: Context) {
         } finally {
             publication.close()
         }
+    }
+
+    /**
+     * The reader outline for this EPUB: its table of contents, falling back to its reading order
+     * when the package ships none. Reuses [ReaderOutline.fromTableOfContents] — the same builder
+     * the reader activity uses — so a mapping the reader corrected is never contradicted by a
+     * second, slightly different reading of the same package document.
+     */
+    fun outline(file: File): List<OutlineEntry> {
+        rejectEncryptedPackage(file)
+        val publication = openPublication(file)
+        return try {
+            val tableOfContents = runCatching { publication.tableOfContents }.getOrDefault(emptyList())
+            val readingOrder = runCatching { publication.readingOrder }.getOrDefault(emptyList())
+            ReaderOutline.fromTableOfContents(convert(tableOfContents), convert(readingOrder))
+        } finally {
+            publication.close()
+        }
+    }
+
+    private fun convert(links: List<Link>): List<OutlineLink> = links.map {
+        OutlineLink(title = it.title, href = it.url().toString(), children = convert(it.children))
     }
 
     fun open(file: File, locatorJson: String?): OpenedEpub {

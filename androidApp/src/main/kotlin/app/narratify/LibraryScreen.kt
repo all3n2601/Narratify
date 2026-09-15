@@ -339,7 +339,7 @@ class LibraryScreen(
             ).apply { setLineSpacing(0f, 1.45f) },
             stack(Gap.XS),
         )
-        addView(primaryButton("Import a book") { onImport() }, stack(Gap.LG).apply {
+        addView(context.primaryButton(theme, "Import a book") { onImport() }, stack(Gap.LG).apply {
             width = LayoutParams.WRAP_CONTENT
         })
     }
@@ -793,7 +793,8 @@ class LibraryScreen(
                 },
                 stack(Gap.XS),
             )
-            addView(bookActionRow(
+            addView(context.bookActionRow(
+                theme,
                 title = if (book.hidden) "Unhide" else "Hide",
                 detail = if (book.hidden) "Return this book to your main shelf" else "Move this book to the Hidden shelf",
                 color = ink,
@@ -802,7 +803,8 @@ class LibraryScreen(
                 onSetHiddenLocal(book, !book.hidden)
             }, stack(Gap.MD))
             addView(context.ruleView(theme.rule))
-            addView(bookActionRow(
+            addView(context.bookActionRow(
+                theme,
                 title = if (book.hasNarration) "Replace narration" else "Add narration",
                 detail = if (book.hasNarration) {
                     "Swap the audiobook paired with this book"
@@ -816,7 +818,8 @@ class LibraryScreen(
             })
             if (book.hasNarration) {
                 addView(context.ruleView(theme.rule))
-                addView(bookActionRow(
+                addView(context.bookActionRow(
+                    theme,
                     title = "Remove narration",
                     detail = "Delete the paired audio and its chapter list",
                     color = theme.danger,
@@ -826,7 +829,8 @@ class LibraryScreen(
                 })
             }
             addView(context.ruleView(theme.rule))
-            addView(bookActionRow(
+            addView(context.bookActionRow(
+                theme,
                 title = "Remove from library",
                 detail = "Permanently delete Narratify’s saved copy",
                 color = theme.danger,
@@ -844,19 +848,6 @@ class LibraryScreen(
         dialog.show()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
     }
-
-    private fun bookActionRow(title: String, detail: String, color: Int, action: () -> Unit) =
-        LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(Gap.SM), dp(Gap.MD), dp(Gap.SM), dp(Gap.MD))
-            background = surfaceShape(Color.TRANSPARENT, Radius.INPUT)
-            isClickable = true
-            isFocusable = true
-            contentDescription = "$title. $detail"
-            addView(context.styledText(title, Type.BODY, color, Typeface.BOLD))
-            addView(context.styledText(detail, Type.MICRO, mutedInk), stack(Gap.XXS))
-            setOnClickListener { action() }
-        }
 
     private fun confirmRemoval(book: LocalBook) {
         val dialog = Dialog(context)
@@ -956,17 +947,6 @@ class LibraryScreen(
             layoutParams = LinearLayout.LayoutParams(dp(48), dp(48))
         }
 
-    private fun primaryButton(title: String, action: () -> Unit) =
-        context.styledText(title, Type.BODY, theme.onAccent, Typeface.BOLD).apply {
-            gravity = Gravity.CENTER
-            background = surfaceShape(theme.accent, Radius.INPUT)
-            setPadding(dp(Gap.XL), dp(Gap.SM), dp(Gap.XL), dp(Gap.SM))
-            minHeight = dp(48)
-            isClickable = true
-            isFocusable = true
-            setOnClickListener { action() }
-        }
-
     private fun showError(message: String) {
         val notice = Dialog(context)
         notice.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -983,7 +963,7 @@ class LibraryScreen(
                 context.styledText(message, Type.BODY, mutedInk).apply { setLineSpacing(0f, 1.4f) },
                 stack(Gap.XS),
             )
-            addView(primaryButton("Got it") { notice.dismiss() }, stack(Gap.LG))
+            addView(context.primaryButton(theme, "Got it") { notice.dismiss() }, stack(Gap.LG))
         })
         notice.setOnShowListener {
             notice.window?.setLayout(

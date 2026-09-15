@@ -7,9 +7,11 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
 import app.narratify.playback.AudioChapter
+import app.narratify.playback.ChapterMapping
 import app.narratify.playback.Mp4ChapterReader
 import app.narratify.shared.data.AndroidDatabaseFactory
 import app.narratify.shared.data.LocalLibraryStore
+import app.narratify.shared.data.StoredChapter
 import app.narratify.shared.data.StoredLibraryBook
 import com.narratify.domain.PlainTextDocument
 import com.narratify.domain.PlainTextNormalizer
@@ -428,6 +430,38 @@ class LocalLibraryRepository(private val context: Context) {
             now = System.currentTimeMillis(),
         )
         NarrationAttachment(bookId = book.id, displayName = displayName, chapters = chapters)
+    }
+
+    /**
+     * The reader outline for a book, indexed the way a spine index is; empty when the format has
+     * no sections to speak of.
+     *
+     * Only EPUB has a package document to read a spine from. A plain text or Markdown book is
+     * returned as an empty list rather than a synthesized one-entry outline: an empty list makes
+     * every chapter audio-only, which is the honest result for a format with no spine at all.
+     */
+    fun outlineEntries(book: LocalBook): List<OutlineEntry> {
+        if (book.format != "EPUB") return emptyList()
+        val file = File(book.storageUri)
+        if (!file.isFile) return emptyList()
+        return runCatching { epubService.outline(file) }.getOrDefault(emptyList())
+    }
+
+    /** Persists a reviewed chapter-to-spine mapping. Replaces whatever chapters were stored before. */
+    fun saveChapters(bookId: String, mapping: ChapterMapping) {
+        store.saveChapters(
+            bookId,
+            mapping.rows.map { row ->
+                StoredChapter(
+                    index = row.chapter.index,
+                    title = row.chapter.title.ifBlank { null },
+                    startMs = row.chapter.startMs,
+                    endMs = row.chapter.endMs,
+                    spineIndex = row.spineIndex,
+                    confirmed = row.confirmed,
+                )
+            },
+        )
     }
 
     fun detachNarration(bookId: String): Result<Unit> = runCatching {
