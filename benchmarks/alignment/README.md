@@ -12,10 +12,10 @@ dropped, words misheard, narration that is not in the book, narration of only pa
 and narration of an entirely different book.
 
 One caveat about the error numbers, because they flatter the aligner. Only `interpolated-openings`
-exercises interpolation at all; in the other cases every measured onset falls on a matched token
-and inherits the recognizer's exact time, contributing a zero. With seventeen of twenty pooled
-onsets at zero the median cannot move off it, so p95 is the only figure carrying information about
-interpolation quality. And even that is generous: these fixtures give every word a duration that is
+and `interpolated-word-span` exercise interpolation at all; in the other cases every measured onset
+falls on a matched token and inherits the recognizer's exact time, contributing a zero. With most
+pooled onsets at zero the median cannot move off it, so p95 is the only figure carrying information
+about interpolation quality. And even that is generous: these fixtures give every word a duration that is
 a linear function of its length, so linear interpolation between neighbours is close to exact by
 construction. Real speech is not linear. Expect this number to get worse on real audio, and do not
 treat the current value as a baseline it should hold to.
@@ -57,16 +57,22 @@ trustworthy.
 Changing any threshold is a research finding. Record the new number and the reason here, in the
 same commit as the change.
 
-For reference, the run at the time this was written, over all six cases:
+For reference, the run at the time this was written, over all seven cases:
 
 | | median | p95 | coverage | false sync |
 |---|---|---|---|---|
-| measured | 0 ms | 40 ms | 0.983 | 0 |
+| measured | 0 ms | 40 ms | 0.969 | 0 |
 | gate | ≤ 250 ms | ≤ 750 ms | ≥ 0.85 | 0 |
 
 Per case: `clean-narration` and `narrator-preamble` at WORD with everything matched, `asr-dropouts`
-at WORD with 0.95 matched, `interpolated-openings` and `partial-narration` degraded to SENTENCE at
-0.74 and 0.76, and `wrong-edition` refused at NONE with 0.025 matched.
+at WORD with 0.95 matched, `interpolated-word-span` at WORD with 0.925, `interpolated-openings` and
+`partial-narration` degraded to SENTENCE at 0.74 and 0.76, and `wrong-edition` refused at NONE with
+0.025 matched.
+
+`interpolated-word-span` exists to keep the false-sync count meaningful. A span is graded WORD when
+its matched share clears the threshold, so some of its tokens can still be interpolated — and until
+this case, no fixture ever put an interpolated token under a measured onset inside a WORD span. The
+count read zero without the check having run. It now runs, and still reads zero.
 
 ## Real-audio evidence (not yet run)
 
