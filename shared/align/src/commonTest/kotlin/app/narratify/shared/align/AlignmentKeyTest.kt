@@ -12,9 +12,21 @@ class AlignmentKeyTest {
     }
 
     @Test
-    fun `apostrophes are dropped so transcribers and typesetters agree`() {
+    fun `an apostrophe reads the same however it was typeset`() {
         assertEquals(AlignmentKey.fold("don’t"), AlignmentKey.fold("don't"))
-        assertEquals("dont", AlignmentKey.fold("don't"))
+        assertEquals("don't", AlignmentKey.fold("don't"))
+    }
+
+    @Test
+    fun `a contraction is not a homograph of another word`() {
+        assertNotEquals(AlignmentKey.fold("we'll"), AlignmentKey.fold("well"))
+        assertNotEquals(AlignmentKey.fold("can't"), AlignmentKey.fold("cant"))
+    }
+
+    @Test
+    fun `quotation marks around a word are not part of it`() {
+        assertEquals("seven", AlignmentKey.fold("‘seven’"))
+        assertEquals("seven", AlignmentKey.fold("\"seven\""))
     }
 
     @Test
@@ -32,8 +44,8 @@ class AlignmentKeyTest {
     fun `normalization form never decides a match`() {
         // "café" precomposed (U+00E9) against "café" decomposed (e + U+0301). The two literals are
         // visually identical on purpose — the escape is what distinguishes them.
-        assertEquals(AlignmentKey.fold("café"), AlignmentKey.fold("café"))
-        assertEquals("café", AlignmentKey.fold("café"))
+        assertEquals(AlignmentKey.fold("café"), AlignmentKey.fold("cafe\u0301"))
+        assertEquals("café", AlignmentKey.fold("cafe\u0301"))
     }
 
     @Test
