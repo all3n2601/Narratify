@@ -7,10 +7,15 @@ internal data class Anchor(val bookIndex: Int, val hypothesisIndex: Int)
  * Finds the matches that need no search.
  *
  * Words occurring exactly once on each side of a range can only correspond to each other, so they
- * are free. What is not free is that a handful of them will still be wrong — a transcriber's
- * "sleight" landing where the book says "slate" — and a wrong anchor drags every interpolated
- * token between it and its neighbours to the wrong second. Keeping only the longest run that
- * moves forward on both sides throws those away, because a real reading never goes backwards.
+ * are free. A handful will still be wrong — a transcriber's "sleight" landing where the book says
+ * "slate" — and a wrong anchor drags every interpolated token between it and its neighbours to the
+ * wrong second.
+ *
+ * Keeping only the longest run that moves forward on both sides does not catch that. It detects
+ * wrong order, not wrong words: an anchor is discarded only when keeping it would make the
+ * timeline run backwards, which a real reading never does. A wrong anchor sitting in an
+ * order-consistent position survives untouched. Stopping two different words from folding to one
+ * key in the first place is [AlignmentKey]'s job, not this one's.
  */
 internal object AnchorFinder {
     fun find(
