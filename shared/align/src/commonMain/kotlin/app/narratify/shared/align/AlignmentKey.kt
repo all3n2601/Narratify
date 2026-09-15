@@ -8,17 +8,17 @@ package app.narratify.shared.align
  * thousand times. Dropping everything that is not a letter or a digit also drops the apostrophe,
  * which is the one character typesetters and transcribers reliably disagree about.
  *
- * Known limitation: text is compared in whatever normalization form it arrives in. A precomposed
- * "café" and a decomposed one fold to different keys, because the combining mark is not a letter
- * or a digit and is dropped while the precomposed letter is kept. Both sides are normally NFC, and
- * when they are not the cost is a lower matched ratio — which lowers the granularity the result is
- * allowed to claim rather than putting the highlight in the wrong place. Normalizing would need an
- * expect/actual per platform and is deliberately deferred.
+ * Both sides are canonically composed first, so a precomposed "café" and a decomposed one fold to
+ * the same key. Note this composes rather than strips: "café" and "cafe" remain different words,
+ * which is correct — a narrator who says one did not say the other.
  */
 object AlignmentKey {
-    fun fold(value: String): String = buildString(value.length) {
-        for (character in value) {
-            if (character.isLetterOrDigit()) append(character.lowercaseChar())
+    fun fold(value: String): String {
+        val composed = value.canonicallyComposed()
+        return buildString(composed.length) {
+            for (character in composed) {
+                if (character.isLetterOrDigit()) append(character.lowercaseChar())
+            }
         }
     }
 }

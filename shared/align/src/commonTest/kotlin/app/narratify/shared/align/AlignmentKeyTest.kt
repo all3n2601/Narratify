@@ -29,10 +29,16 @@ class AlignmentKeyTest {
     }
 
     @Test
-    fun `precomposed and decomposed accents fold differently, which is a known limitation`() {
-        assertEquals("café", AlignmentKey.fold("café"))
-        assertEquals("cafe", AlignmentKey.fold("café"))
-        assertNotEquals(AlignmentKey.fold("café"), AlignmentKey.fold("café"))
+    fun `normalization form never decides a match`() {
+        // "café" precomposed (U+00E9) against "café" decomposed (e + U+0301). The two literals are
+        // visually identical on purpose — the escape is what distinguishes them.
+        assertEquals(AlignmentKey.fold("café"), AlignmentKey.fold("café"))
+        assertEquals("café", AlignmentKey.fold("café"))
+    }
+
+    @Test
+    fun `composing is not stripping so an accent still distinguishes two words`() {
+        assertNotEquals(AlignmentKey.fold("café"), AlignmentKey.fold("cafe"))
     }
 
     @Test
