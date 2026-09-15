@@ -5,7 +5,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import app.narratify.playback.AudioChapter
 import app.narratify.playback.ChapterMapping
+import app.narratify.playback.ChapterMappingRow
+import app.narratify.shared.data.StoredChapter
 
 class MainActivity : Activity() {
     private lateinit var repository: LocalLibraryRepository
@@ -115,6 +118,7 @@ class MainActivity : Activity() {
                         onRemoveLocal = ::removeBook,
                         onAddNarration = ::openNarrationPicker,
                         onRemoveNarration = ::removeNarration,
+                        onOpenChapters = ::openChapters,
                         onNavigate = ::showSection,
                         preferences = preferences,
                     ),
@@ -225,6 +229,83 @@ class MainActivity : Activity() {
             .getOrDefault(emptyList())
             .map(OutlineEntry::title)
 
+    private fun openChapters(book: LocalBook) {
+        val chapters = repository.chapters(book.id)
+        val spineTitles = narrationSpineTitles(book)
+        section = AppSection.LIBRARY
+        setContentView(NarrationChaptersScreen(
+            context = this,
+            bookTitle = book.title,
+            chapters = chapters,
+            spineTitles = spineTitles,
+            onPlay = { chapter -> playChapter(book, chapter) },
+            onEditMapping = { editChapterMapping(book) },
+        ))
+        applyWindowPalette(enchantedLibraryPalette())
+    }
+
+    /**
+     * Rebuilds a [ChapterMapping] from what was already saved, so correcting a mapping later
+     * reuses the same review screen the initial pairing shows rather than a second copy of it.
+     */
+    private fun editChapterMapping(book: LocalBook) {
+        val stored = repository.chapters(book.id)
+        val spineTitles = narrationSpineTitles(book)
+        val mapping = ChapterMapping(
+            stored.map { chapter ->
+                ChapterMappingRow(
+                    chapter = AudioChapter(
+                        index = chapter.index,
+                        title = chapter.title.orEmpty(),
+                        startMs = chapter.startMs,
+                        endMs = chapter.endMs,
+                    ),
+                    spineIndex = chapter.spineIndex,
+                    confirmed = chapter.confirmed,
+                )
+            },
+        )
+        section = AppSection.LIBRARY
+        setContentView(NarrationMappingScreen(
+            context = this,
+            bookTitle = book.title,
+            narrationName = repository.narrationName(book.id) ?: "This narration",
+            spineTitles = spineTitles,
+            initialMapping = mapping,
+            onSave = { corrected ->
+                repository.saveChapters(book.id, corrected)
+                openChapters(book)
+            },
+            onCancel = { openChapters(book) },
+        ))
+        applyWindowPalette(enchantedLibraryPalette())
+    }
+
+    /**
+     * Where Step 1's reading pays off: seeks the paired narration to the chapter's start and,
+     * when the chapter has a spine match, moves the reader there too.
+     */
+    private fun playChapter(book: LocalBook, chapter: StoredChapter) {
+        playAudioAt(book, chapter.startMs)
+        chapter.spineIndex?.let { spineIndex ->
+            startActivity(EpubReaderActivity.intent(this, book.id, book.title, autoPlay = false, chapterSpineIndex = spineIndex))
+        }
+    }
+
+    /**
+     * Plays the narration paired with [book] at [startMs]. `NowPlayingScreen` already accepts a
+     * start position for the ordinary "open this audiobook" path; the only addition is
+     * `forceSeekMs`, which seeks even when this book's media item is already loaded, since a
+     * chapter tap is a deliberate jump rather than a resume.
+     */
+    private fun playAudioAt(book: LocalBook, startMs: Long) {
+        val narrationBook = repository.narrationBook(book.id) ?: return
+        releaseMiniPlayer()
+        nowPlaying = NowPlayingScreen(this, narrationBook, startMs, ::showLibrary, forceSeekMs = startMs)
+        setContentView(requireNotNull(nowPlaying))
+        section = AppSection.LIBRARY
+    }
+
     private fun showLibraryWithError(message: String) {
         section = AppSection.LIBRARY
         setContentView(withMiniPlayer(
@@ -239,6 +320,7 @@ class MainActivity : Activity() {
                 onRemoveLocal = ::removeBook,
                 onAddNarration = ::openNarrationPicker,
                 onRemoveNarration = ::removeNarration,
+                onOpenChapters = ::openChapters,
                 initialError = message,
                 onNavigate = ::showSection,
                 preferences = preferences,
@@ -334,9 +416,16 @@ class MainActivity : Activity() {
     private fun openAudiobookFromIntent(source: Intent) {
         val publicationId = source.getStringExtra(EXTRA_OPEN_AUDIOBOOK_ID) ?: return
         source.removeExtra(EXTRA_OPEN_AUDIOBOOK_ID)
-        repository.books()
-            .firstOrNull { it.id == publicationId && it.format in AUDIO_FORMATS }
-            ?.let(::openBook)
+        val chapterStartMs = source.getLongExtra(EXTRA_CHAPTER_START_MS, -1L).takeIf { it >= 0L }
+        source.removeExtra(EXTRA_CHAPTER_START_MS)
+        val book = repository.books().firstOrNull { it.id == publicationId } ?: return
+        // The reader offering its section's narration reopens the same book, but as a jump to a
+        // specific moment rather than the plain "open this audiobook" the notification uses.
+        if (chapterStartMs != null && book.hasNarration) {
+            playAudioAt(book, chapterStartMs)
+            return
+        }
+        if (book.format in AUDIO_FORMATS) openBook(book)
     }
 
     override fun onDestroy() {
@@ -361,6 +450,7 @@ class MainActivity : Activity() {
         private const val IMPORT_BOOK = 2001
         private const val REQUEST_NARRATION = 4210
         internal const val EXTRA_OPEN_AUDIOBOOK_ID = "app.narratify.extra.OPEN_AUDIOBOOK_ID"
+        internal const val EXTRA_CHAPTER_START_MS = "app.narratify.extra.CHAPTER_START_MS"
         private val AUDIO_FORMATS = setOf("MP3", "M4A", "M4B")
     }
 }

@@ -52,7 +52,7 @@ class NarrationMappingScreen(
                     addView(offsetControls(), stack(Gap.LG))
                     addView(rowHost, stack(Gap.LG))
                     addView(context.primaryButton(theme, "Save") { onSave(mapping) }, stack(Gap.LG))
-                    addView(context.primaryButton(theme, "Cancel") { onCancel() }, stack(Gap.SM))
+                    addView(context.secondaryButton(theme, "Cancel") { onCancel() }, stack(Gap.SM))
                 })
             },
             LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT),

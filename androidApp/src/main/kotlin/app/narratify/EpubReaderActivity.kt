@@ -19,6 +19,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.lifecycleScope
+import app.narratify.shared.data.StoredChapter
 import java.util.Locale
 import kotlinx.coroutines.launch
 import org.readium.navigator.media.tts.TtsNavigator
@@ -52,6 +53,7 @@ class EpubReaderActivity : FragmentActivity(), EpubNavigatorFragment.Listener {
     private lateinit var playPauseButton: TextView
     private lateinit var narrationStatus: TextView
     private lateinit var speedLabel: TextView
+    private lateinit var chapterAudioButton: View
     private var fullscreen = false
     private var restoreOutlineAfterFullscreen = false
     /** The EPUB chrome follows the same theme as the rest of the app, not a fixed cream bar. */
@@ -129,6 +131,10 @@ class EpubReaderActivity : FragmentActivity(), EpubNavigatorFragment.Listener {
         applyReaderPreferences()
         observeOutlinePosition()
         requestNotificationPermission()
+        // A chapter tap in the Chapters screen: move the reader to the matched section, the same
+        // way tapping that section in the outline already does.
+        intent.getIntExtra(EXTRA_TARGET_SPINE_INDEX, -1).takeIf { it >= 0 }?.let(::openOutlineEntry)
+        updateChapterAudioAvailability()
         // Opened from the library player column: start narrating without a second tap.
         if (intent.getBooleanExtra(EXTRA_AUTO_PLAY, false)) controlBar.post { toggleNarration() }
     }
@@ -267,6 +273,16 @@ class EpubReaderActivity : FragmentActivity(), EpubNavigatorFragment.Listener {
             },
             LinearLayout.LayoutParams(dp(46), dp(46)),
         )
+        // Offered only when this section has a matched narration chapter; see
+        // updateChapterAudioAvailability(). Hidden by default so it never flashes before the
+        // first position check runs.
+        chapterAudioButton = touchTarget(
+            iconView(NarratifyIcon.Glyph.PLAY, readerPalette.accent, 18),
+            "Play the narration for this section",
+        ) {
+            narrationChapterForCurrentPosition()?.let(::playNarrationChapter)
+        }.apply { visibility = View.GONE }
+        addView(chapterAudioButton, LinearLayout.LayoutParams(dp(48), dp(46)))
     }
 
     private fun changeSpeed(delta: Float) {
@@ -354,13 +370,49 @@ class EpubReaderActivity : FragmentActivity(), EpubNavigatorFragment.Listener {
     private fun observeOutlinePosition() {
         val locators = navigator?.currentLocator ?: return
         lifecycleScope.launch {
-            locators.collect { outlinePanel.setCurrentIndex(ReaderOutline.currentIndex(outlineEntries, it.href.toString())) }
+            locators.collect {
+                outlinePanel.setCurrentIndex(ReaderOutline.currentIndex(outlineEntries, it.href.toString()))
+                updateChapterAudioAvailability()
+            }
         }
     }
 
     private fun currentOutlineIndex(): Int {
         val href = navigator?.currentLocator?.value?.href?.toString() ?: return -1
         return ReaderOutline.currentIndex(outlineEntries, href)
+    }
+
+    /**
+     * The outline index the reading order already gives every section, reused as the "spine
+     * index" a narration chapter is matched against — the same index [narrationSpineTitles] in
+     * `MainActivity` labels and [ChapterMapping] stores.
+     */
+    private fun currentSpineIndex(): Int? = currentOutlineIndex().takeIf { it >= 0 }
+
+    /**
+     * Only shown when a chapter actually maps to this spine item. A book with a narration whose
+     * chapters were never matched will not offer anything here, which is correct: there is nothing
+     * to seek to, and a button that guessed would be worse than no button.
+     */
+    private fun narrationChapterForCurrentPosition(): StoredChapter? {
+        val spineIndex = currentSpineIndex() ?: return null
+        val bookId = intent.getStringExtra(EXTRA_BOOK_ID) ?: return null
+        return repository.chapterForSpine(bookId, spineIndex)
+    }
+
+    private fun updateChapterAudioAvailability() {
+        if (!::chapterAudioButton.isInitialized) return
+        chapterAudioButton.visibility = if (narrationChapterForCurrentPosition() != null) View.VISIBLE else View.GONE
+    }
+
+    /** Hands off to `MainActivity`, which owns the audio session; the reader has no player of its own. */
+    private fun playNarrationChapter(chapter: StoredChapter) {
+        val bookId = intent.getStringExtra(EXTRA_BOOK_ID) ?: return
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra(MainActivity.EXTRA_OPEN_AUDIOBOOK_ID, bookId)
+            putExtra(MainActivity.EXTRA_CHAPTER_START_MS, chapter.startMs)
+        })
     }
 
     private fun isLandscape() = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -555,6 +607,7 @@ class EpubReaderActivity : FragmentActivity(), EpubNavigatorFragment.Listener {
         private const val EXTRA_BOOK_ID = "book-id"
         private const val EXTRA_BOOK_TITLE = "book-title"
         private const val EXTRA_AUTO_PLAY = "auto-play"
+        private const val EXTRA_TARGET_SPINE_INDEX = "target-spine-index"
         private const val NAVIGATOR_TAG = "narratify-epub-navigator"
         private const val ROOT_ID = 0x4e415201
         private const val NAVIGATOR_ID = 0x4e415202
@@ -562,10 +615,17 @@ class EpubReaderActivity : FragmentActivity(), EpubNavigatorFragment.Listener {
         private const val DEFAULT_FONT_SIZE_PT = 20.0
         private const val CONTROL_BAR_HEIGHT_DP = 62
 
-        fun intent(context: Context, bookId: String, title: String, autoPlay: Boolean = false): Intent =
+        fun intent(
+            context: Context,
+            bookId: String,
+            title: String,
+            autoPlay: Boolean = false,
+            chapterSpineIndex: Int? = null,
+        ): Intent =
             Intent(context, EpubReaderActivity::class.java)
                 .putExtra(EXTRA_BOOK_ID, bookId)
                 .putExtra(EXTRA_BOOK_TITLE, title)
                 .putExtra(EXTRA_AUTO_PLAY, autoPlay)
+                .apply { chapterSpineIndex?.let { putExtra(EXTRA_TARGET_SPINE_INDEX, it) } }
     }
 }

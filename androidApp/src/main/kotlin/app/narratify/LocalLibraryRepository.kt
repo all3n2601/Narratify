@@ -464,6 +464,41 @@ class LocalLibraryRepository(private val context: Context) {
         )
     }
 
+    fun chapters(bookId: String): List<StoredChapter> = store.chapters(bookId)
+
+    fun narrationName(bookId: String): String? = store.narration(bookId)?.displayName
+
+    fun chapterForSpine(bookId: String, spineIndex: Int): StoredChapter? =
+        store.chapterForSpine(bookId, spineIndex)
+
+    /**
+     * The narration attached to [bookId], presented as a playable [LocalBook] so it can go
+     * straight into `NowPlayingScreen`. The identity (id, title, author, cover) stays the book's
+     * own — that's what the listener recognises and what playback position is keyed on — only the
+     * file underneath and its format are swapped for the narration's own audio.
+     */
+    fun narrationBook(bookId: String): LocalBook? {
+        val book = store.book(bookId) ?: return null
+        val narration = store.narration(bookId) ?: return null
+        return book.copy(
+            format = narrationFormat(narration.storageUri, narration.mediaType),
+            storageUri = narration.storageUri,
+            byteSize = narration.byteSize,
+        )
+    }
+
+    private fun narrationFormat(storageUri: String, mediaType: String?): String =
+        when (File(storageUri).extension.lowercase()) {
+            "mp3" -> "MP3"
+            "m4a" -> "M4A"
+            "m4b" -> "M4B"
+            else -> when (mediaType) {
+                "audio/mpeg", "audio/mp3" -> "MP3"
+                "audio/mp4", "audio/m4a", "audio/x-m4a" -> "M4A"
+                else -> "M4B"
+            }
+        }
+
     fun detachNarration(bookId: String): Result<Unit> = runCatching {
         store.narration(bookId)?.storageUri?.let { path ->
             val managed = File(path).canonicalFile

@@ -431,6 +431,24 @@ fun Context.primaryButton(palette: AppPalette, title: String, action: () -> Unit
     }
 
 /**
+ * [primaryButton]'s quieter sibling: an outline instead of a fill, for the second action next to
+ * one that already reads as "the" action. Added in Task 8 because `NarrationMappingScreen` drew
+ * Save and Cancel as two identically weighted filled buttons, which makes discarding a reader's
+ * corrections look as intentional as keeping them. No new colours — just the palette's own outline
+ * and ink on a transparent fill.
+ */
+fun Context.secondaryButton(palette: AppPalette, title: String, action: () -> Unit): TextView =
+    styledText(title, Type.BODY, palette.ink, Typeface.BOLD).apply {
+        gravity = Gravity.CENTER
+        background = surfaceShape(Color.TRANSPARENT, Radius.INPUT, palette.outline)
+        setPadding(dpi(Gap.XL), dpi(Gap.SM), dpi(Gap.XL), dpi(Gap.SM))
+        minHeight = dpi(48)
+        isClickable = true
+        isFocusable = true
+        setOnClickListener { action() }
+    }
+
+/**
  * Wraps a small control so it still meets the 48dp touch minimum without growing visually.
  * Android's own guidance is 48dp; several of the old icon buttons were 21sp glyphs.
  */

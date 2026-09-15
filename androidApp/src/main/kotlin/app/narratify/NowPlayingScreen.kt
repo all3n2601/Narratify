@@ -24,6 +24,13 @@ class NowPlayingScreen(
     private val book: LocalBook,
     startPositionMs: Long,
     private val onBack: () -> Unit,
+    /**
+     * An explicit jump, e.g. a chapter tap. Unlike [startPositionMs] — only honoured while this
+     * book's media item is being loaded fresh, so that reopening a book already playing does not
+     * clobber its live position with a stale saved one — this always seeks, because it represents
+     * a reader's deliberate choice to move, not a resume.
+     */
+    private val forceSeekMs: Long? = null,
 ) : FrameLayout(context) {
     private val palette: AppPalette = AppPreferences(context).palette()
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -81,13 +88,15 @@ class NowPlayingScreen(
                             .build(),
                     )
                     .build()
-                if (mediaController.currentMediaItem?.mediaId != book.id) {
+                val alreadyLoaded = mediaController.currentMediaItem?.mediaId == book.id
+                if (!alreadyLoaded) {
                     mediaController.setMediaItem(item, startPositionMs)
                     mediaController.prepare()
-                    mediaController.play()
                 } else if (mediaController.playbackState == Player.STATE_IDLE) {
                     mediaController.prepare()
                 }
+                forceSeekMs?.let(mediaController::seekTo)
+                if (!alreadyLoaded || forceSeekMs != null) mediaController.play()
                 updateProgress()
             }
         }, mainExecutor)

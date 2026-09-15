@@ -39,6 +39,7 @@ class LibraryScreen(
     private val onRemoveLocal: (LocalBook) -> Unit = {},
     private val onAddNarration: (LocalBook) -> Unit = {},
     private val onRemoveNarration: (LocalBook) -> Unit = {},
+    private val onOpenChapters: (LocalBook) -> Unit = {},
     private val initialError: String? = null,
     private val onNavigate: (AppSection) -> Unit = {},
     private val preferences: AppPreferences = AppPreferences(context),
@@ -802,6 +803,18 @@ class LibraryScreen(
                 dialog.dismiss()
                 onSetHiddenLocal(book, !book.hidden)
             }, stack(Gap.MD))
+            if (book.hasNarration) {
+                addView(context.ruleView(theme.rule))
+                addView(context.bookActionRow(
+                    theme,
+                    title = "Chapters",
+                    detail = "Jump between the audio and the text",
+                    color = ink,
+                ) {
+                    dialog.dismiss()
+                    onOpenChapters(book)
+                })
+            }
             addView(context.ruleView(theme.rule))
             addView(context.bookActionRow(
                 theme,
