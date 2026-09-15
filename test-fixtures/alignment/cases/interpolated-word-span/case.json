@@ -1,0 +1,13 @@
+{
+  "description": "A transcript that loses sentence openings while staying accurate enough to grade WORD. Without this case the gate's false-sync count is zero without the check ever running, because every measured onset elsewhere lands on a matched token.",
+  "reference": "reference.txt",
+  "spoken": "reference.txt",
+  "expectedGranularity": "WORD",
+  "seed": 16,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": [],
+  "dropRate": 0.05,
+  "substituteRate": 0.0
+}

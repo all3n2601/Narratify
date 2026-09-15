@@ -1,0 +1,25 @@
+{
+  "granularity": "WORD",
+  "onsets": [
+    {
+      "quote": "The lantern went out at half",
+      "onsetMs": 0
+    },
+    {
+      "quote": "Mara counted the moored boats twice",
+      "onsetMs": 5825
+    },
+    {
+      "quote": "Seven were tied along the north",
+      "onsetMs": 10015
+    },
+    {
+      "quote": "She wrote the figure in her",
+      "onsetMs": 15770
+    },
+    {
+      "quote": "Somebody would ask her about the",
+      "onsetMs": 22450
+    }
+  ]
+}
