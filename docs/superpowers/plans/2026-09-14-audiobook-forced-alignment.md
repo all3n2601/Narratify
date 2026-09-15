@@ -194,6 +194,12 @@ class AlignmentKeyTest {
     }
 
     @Test
+    fun `a modifier letter apostrophe is a letter and survives folding`() {
+        assertEquals("don\u02bct", AlignmentKey.fold("don\u02bct"))
+        assertNotEquals(AlignmentKey.fold("don\u02bct"), AlignmentKey.fold("don't"))
+    }
+
+    @Test
     fun `a mark at the edge of a token is punctuation rather than part of the word`() {
         assertEquals("tis", AlignmentKey.fold("'tis"))
         assertEquals("readers", AlignmentKey.fold("readers'"))
@@ -319,12 +325,17 @@ package app.narratify.shared.align
  * thousand times.
  *
  * A mark between two letters is kept and canonicalised, so a typesetter's "don’t" and a
- * transcriber's "don't" agree. The set is the one `shared/text`'s lexer already treats as
- * word-internal — apostrophe, hyphen, period — because deleting any of them collapses two real
+ * transcriber's "don't" agree. The set is exactly the one `shared/text`'s lexer treats as
+ * word-internal — apostrophe, right single quote, hyphen, period — because deleting any of them
+ * collapses two real
  * words onto one key: "we'll" onto "well", "re-form" onto "reform", "U.S" onto "us". That costs
  * matches, since a recognizer rarely writes the hyphen the page does. It is the right trade here:
  * a missed match lowers the granularity the result may claim, while a collision puts a confident
  * highlight on the wrong second.
+ *
+ * U+02BC MODIFIER LETTER APOSTROPHE is deliberately absent. Unicode classifies it as a letter, the
+ * lexer keeps it as one, and in Uzbek and several romanizations it is a letter rather than
+ * punctuation. Folding it to an apostrophe would erase a real distinction in those languages.
  *
  * Both sides are canonically composed first, so a precomposed "café" and a decomposed one fold to
  * the same key. Note this composes rather than strips: "café" and "cafe" remain different words,
@@ -337,7 +348,7 @@ object AlignmentKey {
      * word ends.
      */
     private val WORD_INTERNAL_MARKS = mapOf(
-        '\'' to '\'', '\u2019' to '\'', '\u02bc' to '\'',
+        '\'' to '\'', '\u2019' to '\'',
         '-' to '-',
         '.' to '.',
     )
@@ -371,7 +382,7 @@ layout:
 ./gradlew :shared:align:jvmTest :shared:align:compileKotlinIosArm64 :shared:align:compileTestKotlinIosArm64
 ```
 
-Expected: `BUILD SUCCESSFUL`, 12 tests passing, and the `This cast can never succeed` warning
+Expected: `BUILD SUCCESSFUL`, 13 tests passing, and the `This cast can never succeed` warning
 described above.
 
 - [ ] **Step 8: Commit**
@@ -451,6 +462,21 @@ class AlignmentModelsTest {
                 resourceId = ResourceId("r"),
                 granularity = AlignmentGranularity.WORD,
                 spans = listOf(span(0, 4, 5000, 6000), span(4, 8, 1000, 2000)),
+            )
+        }
+    }
+
+    @Test
+    fun `a map refuses an audio window nested inside the one before it`() {
+        // Both spans start in order, so checking starts alone lets this through. Playing it would
+        // run the highlight forward through the book while the audio jumped from 9s back to 2s.
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentMap(
+                publicationId = PublicationId("p"),
+                mediaItemId = MediaItemId("m"),
+                resourceId = ResourceId("r"),
+                granularity = AlignmentGranularity.WORD,
+                spans = listOf(span(0, 4, 1000, 9000), span(4, 8, 2000, 3000)),
             )
         }
     }
@@ -560,7 +586,9 @@ data class AlignmentMap(
         require(schemaVersion > 0) { "Schema version must be positive" }
         require(
             spans.zipWithNext().all { (earlier, later) ->
-                earlier.bookTokenEndExclusive <= later.bookTokenStart && earlier.startMs <= later.startMs
+                earlier.bookTokenEndExclusive <= later.bookTokenStart &&
+                    earlier.startMs <= later.startMs &&
+                    earlier.endMs <= later.endMs
             },
         ) { "Spans must move forward in both the book and the audio" }
     }
@@ -614,7 +642,7 @@ data class AlignmentResult(
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 18 tests passing.
+Expected: `BUILD SUCCESSFUL`, 20 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -775,7 +803,7 @@ object BookTokenizer {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 24 tests passing.
+Expected: `BUILD SUCCESSFUL`, 26 tests passing.
 
 If `numerals align against what a narrator actually says` fails, read `shared/text/src/commonMain/kotlin/app/narratify/shared/text/TextNormalizer.kt:36` before changing anything — the expectation, not the code, is what is wrong, and the fix is to correct the test to the normalizer's real output.
 
@@ -954,7 +982,7 @@ internal object AnchorFinder {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 30 tests passing.
+Expected: `BUILD SUCCESSFUL`, 32 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1106,7 +1134,7 @@ internal object BandedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 36 tests passing.
+Expected: `BUILD SUCCESSFUL`, 38 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1276,7 +1304,7 @@ internal object AlignmentMatcher {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 43 tests passing.
+Expected: `BUILD SUCCESSFUL`, 45 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1526,7 +1554,8 @@ object ForcedAligner {
         options: AlignmentOptions,
     ): List<AlignedSpan> = buildList {
         var index = 0
-        var earliestAllowed = 0L
+        var earliestStart = 0L
+        var earliestEnd = 0L
         while (index < bookTokens.size) {
             val chunkId: ChunkId = bookTokens[index].chunkId
             var endExclusive = index
@@ -1535,18 +1564,22 @@ object ForcedAligner {
             }
             val matched = (index until endExclusive).count { timings[it].matched }
             val ratio = matched.toDouble() / (endExclusive - index)
-            val startMs = maxOf(timings[index].startMs, earliestAllowed)
+            // Interpolated times can overlap or nest; the map refuses both, so clamp each span to
+            // start and end no earlier than the one before it.
+            val startMs = maxOf(timings[index].startMs, earliestStart)
+            val endMs = maxOf(timings[endExclusive - 1].endMs, startMs, earliestEnd)
             add(
                 AlignedSpan(
                     bookTokenStart = index,
                     bookTokenEndExclusive = endExclusive,
                     startMs = startMs,
-                    endMs = maxOf(timings[endExclusive - 1].endMs, startMs),
+                    endMs = endMs,
                     matchedRatio = ratio,
                     granularity = options.granularityFor(ratio),
                 ),
             )
-            earliestAllowed = startMs
+            earliestStart = startMs
+            earliestEnd = endMs
             index = endExclusive
         }
     }
@@ -1556,7 +1589,7 @@ object ForcedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 52 tests passing.
+Expected: `BUILD SUCCESSFUL`, 54 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1711,7 +1744,7 @@ object AlignmentCodec {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 56 tests passing.
+Expected: `BUILD SUCCESSFUL`, 58 tests passing.
 
 - [ ] **Step 5: Commit**
 
