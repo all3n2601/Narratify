@@ -1,0 +1,33 @@
+CREATE TABLE narration_chapter (
+  publication_id TEXT NOT NULL,
+  chapter_index INTEGER NOT NULL,
+  title TEXT,
+  start_ms INTEGER NOT NULL,
+  end_ms INTEGER NOT NULL,
+  spine_index INTEGER,
+  confirmed INTEGER NOT NULL DEFAULT 0 CHECK (confirmed IN (0, 1)),
+  PRIMARY KEY (publication_id, chapter_index),
+  FOREIGN KEY (publication_id) REFERENCES publication(id) ON DELETE CASCADE
+);
+
+CREATE INDEX narration_chapter_spine_idx
+ON narration_chapter(publication_id, spine_index);
+
+selectChapters:
+SELECT * FROM narration_chapter
+WHERE publication_id = ?
+ORDER BY chapter_index;
+
+selectChapterForSpine:
+SELECT * FROM narration_chapter
+WHERE publication_id = ? AND spine_index = ?
+ORDER BY chapter_index
+LIMIT 1;
+
+insertChapter:
+INSERT OR REPLACE INTO narration_chapter(
+  publication_id, chapter_index, title, start_ms, end_ms, spine_index, confirmed
+) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteChapters:
+DELETE FROM narration_chapter WHERE publication_id = ?;
