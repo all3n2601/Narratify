@@ -627,20 +627,20 @@ class NarrationStoreTest {
             mediaType = "audio/mp4",
             contentHash = "audio-hash",
             byteSize = 9_000L,
-            durationUs = 20_000_000L,
             now = 2L,
         )
         val narration = store.narration(id)
         assertEquals("/audio/$id.m4b", narration?.storageUri)
-        assertEquals(20_000_000L, narration?.durationUs)
+        assertEquals("harbour.m4b", narration?.displayName)
+        assertEquals(9_000L, narration?.byteSize)
     }
 
     @Test
     fun `attaching a second narration replaces the first`() {
         val store = store()
         val id = store.seedBook()
-        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, null, 2L)
-        store.attachNarration(id, "/audio/two.m4b", "two.m4b", "audio/mp4", "hash-two", 1L, null, 3L)
+        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, 2L)
+        store.attachNarration(id, "/audio/two.m4b", "two.m4b", "audio/mp4", "hash-two", 1L, 3L)
         assertEquals("/audio/two.m4b", store.narration(id)?.storageUri)
     }
 
@@ -648,7 +648,7 @@ class NarrationStoreTest {
     fun `the original file is untouched by attaching a narration`() {
         val store = store()
         val id = store.seedBook()
-        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, null, 2L)
+        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, 2L)
         assertEquals("/books/$id.epub", store.book(id)?.storageUri)
         assertEquals("EPUB", store.book(id)?.format)
     }
@@ -707,7 +707,7 @@ class NarrationStoreTest {
     fun `detaching removes the narration and its chapters but keeps the book`() {
         val store = store()
         val id = store.seedBook()
-        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, null, 2L)
+        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, 2L)
         store.saveChapters(id, listOf(StoredChapter(0, "One", 0L, 1L, 0, confirmed = false)))
         store.detachNarration(id)
         assertNull(store.narration(id))
@@ -732,7 +732,6 @@ data class StoredNarration(
     val displayName: String?,
     val mediaType: String?,
     val byteSize: Long,
-    val durationUs: Long?,
 )
 
 data class StoredChapter(
@@ -763,7 +762,6 @@ Add `private const val NARRATION_FILE_ROLE = "narration"` beside the existing `O
         mediaType: String?,
         contentHash: String,
         byteSize: Long,
-        durationUs: Long?,
         now: Long,
     ) {
         database.transaction {
@@ -796,9 +794,6 @@ Add `private const val NARRATION_FILE_ROLE = "narration"` beside the existing `O
                     displayName = it.display_name,
                     mediaType = it.media_type,
                     byteSize = it.byte_size,
-                    durationUs = database.publicationsQueries.selectPublicationById(publicationId)
-                        .executeAsOneOrNull()
-                        ?.duration_us,
                 )
             }
 
@@ -845,7 +840,12 @@ Add `private const val NARRATION_FILE_ROLE = "narration"` beside the existing `O
     )
 ```
 
-The narration's duration is read from the publication's own `duration_us` column, which the import path already populates for audio. `durationUs` is therefore null for a book whose duration was never recorded, and the caller treats that as "length unknown" rather than zero.
+`StoredNarration` deliberately carries no duration. Nothing needs it persisted: chapter end times
+are computed when the file is parsed and stored in `narration_chapter`, and the player reads length
+from the file itself. The publication's own `duration_us` is the *book's* duration, set at import,
+and writing an audio length into it for an EPUB would conflate two different things. A duration
+column on `library_file` would mean another migration to store a number that is already available
+wherever it is used.
 
 - [ ] **Step 4: Add the missing query**
 
@@ -1051,6 +1051,8 @@ In `LocalLibraryRepository.kt`, add this method. It reuses the same extension an
             destination.outputStream().use(input::copyTo)
         }
 
+        // Needed only to close the last chapter, which ends where the audio does. Not persisted:
+        // see the note on StoredNarration in Task 4.
         val durationMs = runCatching {
             MediaMetadataRetriever().use { retriever ->
                 retriever.setDataSource(destination.absolutePath)
@@ -1069,7 +1071,6 @@ In `LocalLibraryRepository.kt`, add this method. It reuses the same extension an
             mediaType = mediaType,
             contentHash = fingerprintOf(destination),
             byteSize = destination.length(),
-            durationUs = durationMs.takeIf { it > 0 }?.times(1_000L),
             now = System.currentTimeMillis(),
         )
         NarrationAttachment(bookId = book.id, displayName = displayName, chapters = chapters)
@@ -1153,7 +1154,7 @@ Add to `NarrationStoreTest`:
         val store = store()
         val id = store.seedBook()
         assertFalse(store.book(id)!!.hasNarration)
-        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, null, 2L)
+        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, 2L)
         assertTrue(store.book(id)!!.hasNarration)
     }
 
@@ -1161,7 +1162,7 @@ Add to `NarrationStoreTest`:
     fun `a book in the library list reports its narration too`() {
         val store = store()
         val id = store.seedBook()
-        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, null, 2L)
+        store.attachNarration(id, "/audio/one.m4b", "one.m4b", "audio/mp4", "hash-one", 1L, 2L)
         assertTrue(store.books().single { it.id == id }.hasNarration)
     }
 ```
