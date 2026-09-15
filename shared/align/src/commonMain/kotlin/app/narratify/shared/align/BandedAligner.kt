@@ -8,6 +8,14 @@ package app.narratify.shared.align
  * quadratic in both directions, which is affordable for the gaps anchoring leaves behind and
  * ruinous for anything larger, so it refuses rather than trying: a returned `null` means the
  * caller should narrow the range or interpolate across it.
+ *
+ * When several alignments tie on cost, the traceback prefers the diagonal, which can leave a
+ * match unrecorded that an equally cheap path would have found: aligning "x a" against "a x"
+ * finds nothing, though one path pairs the two "a"s. That is deliberate. The lost match costs
+ * coverage, which lowers the granularity the result may claim, whereas the alternative pairing
+ * asserts that a book token was spoken at the time of a word in a different position — a
+ * measurement, and possibly a wrong one. Whether recovering these is worth a second objective in
+ * the DP is a question for the gate, not for a guess.
  */
 internal object BandedAligner {
     /** Roughly 1 MB of int cells. A gap this size means anchoring failed, not that the book is hard. */

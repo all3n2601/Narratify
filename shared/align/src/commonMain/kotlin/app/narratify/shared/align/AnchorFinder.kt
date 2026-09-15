@@ -16,6 +16,11 @@ internal data class Anchor(val bookIndex: Int, val hypothesisIndex: Int)
  * timeline run backwards, which a real reading never does. A wrong anchor sitting in an
  * order-consistent position survives untouched. Stopping two different words from folding to one
  * key in the first place is [AlignmentKey]'s job, not this one's.
+ *
+ * This is O(range) per call, and the caller is what keeps that affordable: [AlignmentMatcher]
+ * recurses over disjoint sub-ranges under a depth cap, so total work across a chapter is bounded
+ * by that cap times the token count rather than by its square. Calling this on overlapping ranges
+ * would quietly make alignment quadratic.
  */
 internal object AnchorFinder {
     fun find(

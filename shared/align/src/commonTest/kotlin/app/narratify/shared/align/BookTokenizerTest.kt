@@ -1,5 +1,6 @@
 package app.narratify.shared.align
 
+import app.narratify.shared.text.TtsTextPreparer
 import com.narratify.domain.PublicationId
 import com.narratify.domain.PublicationLocator
 import com.narratify.domain.ResourceId
@@ -63,5 +64,12 @@ class BookTokenizerTest {
             accumulator
         }
         assertEquals(runs, runs.distinct(), "a chunk id must not reappear after another chunk")
+    }
+
+    @Test
+    fun `chunks already prepared can be tokenized without preparing them again`() {
+        val spans = listOf(span("The harbour turned grey."))
+        val chunks = TtsTextPreparer.prepare(spans)
+        assertEquals(BookTokenizer.tokenize(spans).map(BookToken::key), BookTokenizer.fromChunks(chunks).map(BookToken::key))
     }
 }

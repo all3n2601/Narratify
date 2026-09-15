@@ -46,4 +46,11 @@ class BandedAlignerTest {
         val hypothesis = List(600) { "word" }
         assertNull(align(book, hypothesis))
     }
+
+    @Test
+    fun `a tie on cost prefers the diagonal even where another path would match`() {
+        // Both alignments cost 2. The path through cost[2][1] pairs the two "a"s; the diagonal
+        // path records nothing. Pinned because it is a deliberate trade, not an oversight.
+        assertEquals(emptyList(), align(listOf("x", "a"), listOf("a", "x")))
+    }
 }
