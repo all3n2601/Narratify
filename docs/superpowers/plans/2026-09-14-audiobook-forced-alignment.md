@@ -165,9 +165,21 @@ class AlignmentKeyTest {
     }
 
     @Test
-    fun `apostrophes are dropped so transcribers and typesetters agree`() {
+    fun `an apostrophe reads the same however it was typeset`() {
         assertEquals(AlignmentKey.fold("don’t"), AlignmentKey.fold("don't"))
-        assertEquals("dont", AlignmentKey.fold("don't"))
+        assertEquals("don't", AlignmentKey.fold("don't"))
+    }
+
+    @Test
+    fun `a contraction is not a homograph of another word`() {
+        assertNotEquals(AlignmentKey.fold("we'll"), AlignmentKey.fold("well"))
+        assertNotEquals(AlignmentKey.fold("can't"), AlignmentKey.fold("cant"))
+    }
+
+    @Test
+    fun `quotation marks around a word are not part of it`() {
+        assertEquals("seven", AlignmentKey.fold("‘seven’"))
+        assertEquals("seven", AlignmentKey.fold("\"seven\""))
     }
 
     @Test
@@ -256,13 +268,22 @@ package app.narratify.shared.align
 import platform.Foundation.NSString
 import platform.Foundation.precomposedStringWithCanonicalMapping
 
+// Kotlin/Native does not model toll-free String/NSString bridging, so it reads this as impossible.
+@Suppress("CAST_NEVER_SUCCEEDS")
 internal actual fun String.canonicallyComposed(): String =
     (this as NSString).precomposedStringWithCanonicalMapping
 ```
 
-That cast draws `w: This cast can never succeed` from the Kotlin/Native compiler. The warning is
-wrong: the type checker does not model the `String`/`NSString` interop bridge, and the cast
-succeeds at runtime. Leave it rather than suppressing it module-wide.
+Without the suppression the compiler reports `w: This cast can never succeed` on every iOS build.
+The warning is wrong — the cast works at runtime, which `:shared:align:iosSimulatorArm64Test`
+demonstrates — but an unexplained warning in the log is how people learn to ignore the warnings
+that matter.
+
+Do not try to remove the duplication between the `jvmMain` and `androidMain` copies by declaring a
+`jvmAndAndroidMain` intermediate source set. Adding explicit `dependsOn` edges switches off the
+default hierarchy template for the whole module, which unwires `iosMain` from `commonMain`; the iOS
+targets then fail with `The 'expect' declaration 'canonicallyComposed' has no 'actual' declaration`.
+Two six-line files are cheaper than that.
 
 - [ ] **Step 6: Write the implementation**
 
@@ -276,8 +297,11 @@ package app.narratify.shared.align
  *
  * Folding is deliberately lossy and deliberately cheap: it runs once over every token of a book
  * and once over every token of its narration, so anything clever here is paid for a hundred
- * thousand times. Dropping everything that is not a letter or a digit also drops the apostrophe,
- * which is the one character typesetters and transcribers reliably disagree about.
+ * thousand times.
+ *
+ * An apostrophe between two letters is kept, folded to one canonical form so that a typesetter's
+ * "don’t" and a transcriber's "don't" agree. Deleting it instead would make "we'll" a homograph of
+ * "well", and a homograph is how a confident anchor lands on the wrong second.
  *
  * Both sides are canonically composed first, so a precomposed "café" and a decomposed one fold to
  * the same key. Note this composes rather than strips: "café" and "cafe" remain different words,
@@ -287,11 +311,21 @@ object AlignmentKey {
     fun fold(value: String): String {
         val composed = value.canonicallyComposed()
         return buildString(composed.length) {
-            for (character in composed) {
-                if (character.isLetterOrDigit()) append(character.lowercaseChar())
+            for (index in composed.indices) {
+                val character = composed[index]
+                when {
+                    character.isLetterOrDigit() -> append(character.lowercaseChar())
+                    character.isApostrophe() && composed.isInsideWord(index) -> append('\'')
+                }
             }
         }
     }
+
+    private fun Char.isApostrophe(): Boolean = this == '\'' || this == '\u2019' || this == '\u02bc'
+
+    /** An apostrophe is part of a word only between two letters; elsewhere it is a quotation mark. */
+    private fun String.isInsideWord(index: Int): Boolean =
+        index > 0 && index + 1 < length && this[index - 1].isLetterOrDigit() && this[index + 1].isLetterOrDigit()
 }
 ```
 
@@ -304,7 +338,7 @@ layout:
 ./gradlew :shared:align:jvmTest :shared:align:compileKotlinIosArm64 :shared:align:compileTestKotlinIosArm64
 ```
 
-Expected: `BUILD SUCCESSFUL`, 7 tests passing, and the `This cast can never succeed` warning
+Expected: `BUILD SUCCESSFUL`, 9 tests passing, and the `This cast can never succeed` warning
 described above.
 
 - [ ] **Step 8: Commit**
@@ -547,7 +581,7 @@ data class AlignmentResult(
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 13 tests passing.
+Expected: `BUILD SUCCESSFUL`, 15 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -708,7 +742,7 @@ object BookTokenizer {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 19 tests passing.
+Expected: `BUILD SUCCESSFUL`, 21 tests passing.
 
 If `numerals align against what a narrator actually says` fails, read `shared/text/src/commonMain/kotlin/app/narratify/shared/text/TextNormalizer.kt:36` before changing anything — the expectation, not the code, is what is wrong, and the fix is to correct the test to the normalizer's real output.
 
@@ -887,7 +921,7 @@ internal object AnchorFinder {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 25 tests passing.
+Expected: `BUILD SUCCESSFUL`, 27 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1039,7 +1073,7 @@ internal object BandedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 31 tests passing.
+Expected: `BUILD SUCCESSFUL`, 33 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1209,7 +1243,7 @@ internal object AlignmentMatcher {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 38 tests passing.
+Expected: `BUILD SUCCESSFUL`, 40 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1489,7 +1523,7 @@ object ForcedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 47 tests passing.
+Expected: `BUILD SUCCESSFUL`, 49 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1644,7 +1678,7 @@ object AlignmentCodec {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 51 tests passing.
+Expected: `BUILD SUCCESSFUL`, 53 tests passing.
 
 - [ ] **Step 5: Commit**
 
