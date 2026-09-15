@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
+import app.narratify.playback.AudioChapter
+import app.narratify.playback.Mp4ChapterReader
 import app.narratify.shared.data.AndroidDatabaseFactory
 import app.narratify.shared.data.LocalLibraryStore
 import app.narratify.shared.data.StoredLibraryBook
@@ -337,16 +339,7 @@ class LocalLibraryRepository(private val context: Context) {
             }
             if (destination.exists()) require(destination.delete()) { "The old cover could not be replaced." }
             require(partial.renameTo(destination)) { "The cover image could not be installed." }
-            val digest = MessageDigest.getInstance("SHA-256")
-            destination.inputStream().buffered().use { input ->
-                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                while (true) {
-                    val count = input.read(buffer)
-                    if (count < 0) break
-                    digest.update(buffer, 0, count)
-                }
-            }
-            val hash = digest.digest().joinToString("") { "%02x".format(it) }
+            val hash = fingerprintOf(destination)
             require(store.saveCover(book.id, destination.absolutePath, hash, destination.length(), System.currentTimeMillis()))
             missingCoverMarker(book.id).delete()
             book.copy(coverUri = destination.absolutePath)
@@ -354,6 +347,98 @@ class LocalLibraryRepository(private val context: Context) {
             partial.delete()
             null
         }
+    }
+
+    /** The same SHA-256 hex digest `import` uses, so a narration and an import can never disagree about a file's identity. */
+    private fun fingerprintOf(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().buffered().use { input ->
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            while (true) {
+                val count = input.read(buffer)
+                if (count < 0) break
+                digest.update(buffer, 0, count)
+            }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
+    }
+
+    /**
+     * Copies an audio file into managed storage and records it as this book's narration.
+     *
+     * Chapters are read here rather than on demand because the file is already open and a reader
+     * who has just chosen it is the only person who will be shown the mapping. A file whose
+     * chapters cannot be read is still attached — it simply has none, which the design treats as
+     * ordinary rather than as a failed import.
+     */
+    fun attachNarration(bookId: String, uri: Uri): Result<NarrationAttachment> = runCatching {
+        val book = requireNotNull(store.book(bookId)) { "This book is no longer in the library." }
+        val resolver = context.contentResolver
+        val metadata = runCatching {
+            resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE), null, null, null)
+                ?.use { cursor ->
+                    if (!cursor.moveToFirst()) null else {
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                        val name = if (nameIndex >= 0) cursor.getString(nameIndex) else null
+                        val size = if (sizeIndex >= 0 && !cursor.isNull(sizeIndex)) cursor.getLong(sizeIndex) else null
+                        name to size
+                    }
+                }
+        }.getOrNull()
+        val displayName = metadata?.first?.takeIf(String::isNotBlank) ?: "Narration"
+        val mediaType = runCatching { resolver.getType(uri) }.getOrNull()?.substringBefore(';')?.trim()?.lowercase()
+        val extension = supportedExtension(displayName, mediaType)
+        require(extension in AUDIO_EXTENSIONS) {
+            "A narration must be an MP3, M4A, or M4B file."
+        }
+        require((metadata?.second ?: 0L) <= MAX_AUDIO_BYTES) {
+            "Audio files larger than 4 GB are not supported."
+        }
+
+        val destination = File(filesDirectory, "${book.id}.narration.$extension")
+        resolver.openInputStream(uri).use { input ->
+            requireNotNull(input) { "That file could not be opened." }
+            destination.outputStream().use(input::copyTo)
+        }
+
+        // Needed only to close the last chapter, which ends where the audio does. Not persisted:
+        // see the note on StoredNarration in Task 4.
+        val retriever = MediaMetadataRetriever()
+        val durationMs = try {
+            retriever.setDataSource(destination.absolutePath)
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
+        } catch (_: Exception) {
+            null
+        } finally {
+            retriever.release()
+        } ?: 0L
+
+        val chapters = Mp4MoovReader.read(destination)
+            ?.let { Mp4ChapterReader.read(it, durationMs) }
+            .orEmpty()
+
+        store.attachNarration(
+            publicationId = book.id,
+            storageUri = destination.absolutePath,
+            displayName = displayName,
+            mediaType = mediaType,
+            contentHash = fingerprintOf(destination),
+            byteSize = destination.length(),
+            now = System.currentTimeMillis(),
+        )
+        NarrationAttachment(bookId = book.id, displayName = displayName, chapters = chapters)
+    }
+
+    fun detachNarration(bookId: String): Result<Unit> = runCatching {
+        store.narration(bookId)?.storageUri?.let { path ->
+            val managed = File(path).canonicalFile
+            require(managed.parentFile == filesDirectory.canonicalFile) {
+                "Narratify can only remove its own managed files."
+            }
+            managed.delete()
+        }
+        store.detachNarration(bookId)
     }
 
     private fun missingCoverMarker(bookId: String) = File(filesDirectory, ".$bookId.cover-none")
@@ -426,4 +511,11 @@ private data class AudioMetadata(
     val artist: String?,
     val durationMs: Long,
     val cover: Bitmap?,
+)
+
+/** What a freshly attached narration knows about itself before its mapping is reviewed. */
+data class NarrationAttachment(
+    val bookId: String,
+    val displayName: String,
+    val chapters: List<AudioChapter>,
 )

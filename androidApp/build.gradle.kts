@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":shared:domain"))
     implementation(project(":shared:data"))
     implementation(project(":shared:text"))
+    implementation(project(":shared:playback"))
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.readium.shared)
     implementation(libs.readium.streamer)
