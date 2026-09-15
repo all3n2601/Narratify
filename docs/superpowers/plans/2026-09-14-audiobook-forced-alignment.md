@@ -183,6 +183,25 @@ class AlignmentKeyTest {
     }
 
     @Test
+    fun `a hyphenated word is not a homograph of the word without it`() {
+        assertNotEquals(AlignmentKey.fold("re-form"), AlignmentKey.fold("reform"))
+        assertEquals("re-form", AlignmentKey.fold("re-form"))
+    }
+
+    @Test
+    fun `an abbreviation is not a homograph of a word`() {
+        assertNotEquals(AlignmentKey.fold("U.S"), AlignmentKey.fold("us"))
+    }
+
+    @Test
+    fun `a mark at the edge of a token is punctuation rather than part of the word`() {
+        assertEquals("tis", AlignmentKey.fold("'tis"))
+        assertEquals("readers", AlignmentKey.fold("readers'"))
+        assertEquals("", AlignmentKey.fold("'"))
+        assertEquals("", AlignmentKey.fold("-"))
+    }
+
+    @Test
     fun `digits survive folding`() {
         assertEquals("1984", AlignmentKey.fold("1984."))
     }
@@ -299,31 +318,45 @@ package app.narratify.shared.align
  * and once over every token of its narration, so anything clever here is paid for a hundred
  * thousand times.
  *
- * An apostrophe between two letters is kept, folded to one canonical form so that a typesetter's
- * "don’t" and a transcriber's "don't" agree. Deleting it instead would make "we'll" a homograph of
- * "well", and a homograph is how a confident anchor lands on the wrong second.
+ * A mark between two letters is kept and canonicalised, so a typesetter's "don’t" and a
+ * transcriber's "don't" agree. The set is the one `shared/text`'s lexer already treats as
+ * word-internal — apostrophe, hyphen, period — because deleting any of them collapses two real
+ * words onto one key: "we'll" onto "well", "re-form" onto "reform", "U.S" onto "us". That costs
+ * matches, since a recognizer rarely writes the hyphen the page does. It is the right trade here:
+ * a missed match lowers the granularity the result may claim, while a collision puts a confident
+ * highlight on the wrong second.
  *
  * Both sides are canonically composed first, so a precomposed "café" and a decomposed one fold to
  * the same key. Note this composes rather than strips: "café" and "cafe" remain different words,
  * which is correct — a narrator who says one did not say the other.
  */
 object AlignmentKey {
+    /**
+     * The marks `shared/text`'s lexer keeps inside a word lexeme, each canonicalised to one form.
+     * Folding preserves exactly this set so that two components cannot disagree about where a
+     * word ends.
+     */
+    private val WORD_INTERNAL_MARKS = mapOf(
+        '\'' to '\'', '\u2019' to '\'', '\u02bc' to '\'',
+        '-' to '-',
+        '.' to '.',
+    )
+
     fun fold(value: String): String {
         val composed = value.canonicallyComposed()
         return buildString(composed.length) {
             for (index in composed.indices) {
                 val character = composed[index]
+                val mark = WORD_INTERNAL_MARKS[character]
                 when {
                     character.isLetterOrDigit() -> append(character.lowercaseChar())
-                    character.isApostrophe() && composed.isInsideWord(index) -> append('\'')
+                    mark != null && composed.isInsideWord(index) -> append(mark)
                 }
             }
         }
     }
 
-    private fun Char.isApostrophe(): Boolean = this == '\'' || this == '\u2019' || this == '\u02bc'
-
-    /** An apostrophe is part of a word only between two letters; elsewhere it is a quotation mark. */
+    /** A mark is part of a word only between two letters; elsewhere it is punctuation. */
     private fun String.isInsideWord(index: Int): Boolean =
         index > 0 && index + 1 < length && this[index - 1].isLetterOrDigit() && this[index + 1].isLetterOrDigit()
 }
@@ -338,7 +371,7 @@ layout:
 ./gradlew :shared:align:jvmTest :shared:align:compileKotlinIosArm64 :shared:align:compileTestKotlinIosArm64
 ```
 
-Expected: `BUILD SUCCESSFUL`, 9 tests passing, and the `This cast can never succeed` warning
+Expected: `BUILD SUCCESSFUL`, 12 tests passing, and the `This cast can never succeed` warning
 described above.
 
 - [ ] **Step 8: Commit**
@@ -581,7 +614,7 @@ data class AlignmentResult(
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 15 tests passing.
+Expected: `BUILD SUCCESSFUL`, 18 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -742,7 +775,7 @@ object BookTokenizer {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 21 tests passing.
+Expected: `BUILD SUCCESSFUL`, 24 tests passing.
 
 If `numerals align against what a narrator actually says` fails, read `shared/text/src/commonMain/kotlin/app/narratify/shared/text/TextNormalizer.kt:36` before changing anything — the expectation, not the code, is what is wrong, and the fix is to correct the test to the normalizer's real output.
 
@@ -921,7 +954,7 @@ internal object AnchorFinder {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 27 tests passing.
+Expected: `BUILD SUCCESSFUL`, 30 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1073,7 +1106,7 @@ internal object BandedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 33 tests passing.
+Expected: `BUILD SUCCESSFUL`, 36 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1243,7 +1276,7 @@ internal object AlignmentMatcher {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 40 tests passing.
+Expected: `BUILD SUCCESSFUL`, 43 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1523,7 +1556,7 @@ object ForcedAligner {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 49 tests passing.
+Expected: `BUILD SUCCESSFUL`, 52 tests passing.
 
 - [ ] **Step 5: Commit**
 
@@ -1678,7 +1711,7 @@ object AlignmentCodec {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `./gradlew :shared:align:jvmTest`
-Expected: `BUILD SUCCESSFUL`, 53 tests passing.
+Expected: `BUILD SUCCESSFUL`, 56 tests passing.
 
 - [ ] **Step 5: Commit**
 
