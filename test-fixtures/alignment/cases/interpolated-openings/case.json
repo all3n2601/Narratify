@@ -1,0 +1,13 @@
+{
+  "description": "A transcript that loses sentence openings, so their onsets must be interpolated rather than measured. Without this case the gate reports zero error while never testing interpolation at all.",
+  "reference": "reference.txt",
+  "spoken": "reference.txt",
+  "expectedGranularity": "SENTENCE",
+  "seed": 2,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": [],
+  "dropRate": 0.2,
+  "substituteRate": 0.04
+}
