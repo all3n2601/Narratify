@@ -2199,7 +2199,18 @@ git commit -m "feat(align): add the deterministic synthetic narration generator"
 
 ## Task 10: The fixture cases
 
-Five cases, chosen because each is a different way real read-along fails: a clean reading, a narrator who talks before the book starts, a transcript full of holes, a narration that covers only part of the text, and a narration of something else entirely.
+Six cases, chosen because each is a different way real read-along fails: a clean reading, a
+narrator who talks before the book starts, a transcript full of holes, a transcript that loses
+sentence openings, a narration that covers only part of the text, and a narration of something
+else entirely.
+
+The fourth exists because of what the first gate run showed. With the other five, every measured
+sentence onset happened to land on a matched token, so it took the recognizer's exact time and the
+gate reported a median and p95 error of zero. That is a flattering number measuring nothing: the
+error metrics never touched the interpolation path, which is the code carrying this plan's central
+promise that a guess is never presented as a measurement. `interpolated-openings` drops three of
+the five sentence openings, forcing those onsets to be interpolated, so the gate finally measures
+the part most likely to be wrong.
 
 **Files:**
 - Create: `test-fixtures/alignment/gate.json`
@@ -2213,7 +2224,7 @@ Five cases, chosen because each is a different way real read-along fails: a clea
 
 - [ ] **Step 1: Write the shared reference text**
 
-This exact text goes into `reference.txt` in all five case directories. It carries no digits, abbreviations, or roman numerals, so the Kotlin spoken-form normalizer and the generator's plain word split cannot disagree about how many tokens it contains.
+This exact text goes into `reference.txt` in all six case directories. It carries no digits, abbreviations, or roman numerals, so the Kotlin spoken-form normalizer and the generator's plain word split cannot disagree about how many tokens it contains.
 
 ```
 The lantern went out at half past four, and the harbour turned the colour of wet slate.
@@ -2224,18 +2235,18 @@ She wrote the figure in her notebook, underlined it, and walked back along the b
 ```
 
 ```bash
-mkdir -p test-fixtures/alignment/cases/{clean-narration,narrator-preamble,asr-dropouts,partial-narration,wrong-edition}
+mkdir -p test-fixtures/alignment/cases/{clean-narration,narrator-preamble,asr-dropouts,interpolated-openings,partial-narration,wrong-edition}
 ```
 
 Write the text above to `test-fixtures/alignment/cases/clean-narration/reference.txt`, then:
 
 ```bash
-for case in narrator-preamble asr-dropouts partial-narration wrong-edition; do
+for case in narrator-preamble asr-dropouts interpolated-openings partial-narration wrong-edition; do
   cp test-fixtures/alignment/cases/clean-narration/reference.txt "test-fixtures/alignment/cases/$case/reference.txt"
 done
 ```
 
-- [ ] **Step 2: Write the five case descriptors**
+- [ ] **Step 2: Write the six case descriptors**
 
 `test-fixtures/alignment/cases/clean-narration/case.json`:
 
@@ -2287,6 +2298,27 @@ done
   "gapMs": 40,
   "preamble": [],
   "dropRate": 0.06,
+  "substituteRate": 0.04
+}
+```
+
+`test-fixtures/alignment/cases/interpolated-openings/case.json`. Seed 2 at a 20% drop rate removes
+the opening word of three of the five sentences, which is the whole point: those onsets can only be
+reached by interpolating between surviving neighbours, so this case is the only one whose onset
+error measures the interpolation path rather than the recognizer's own timings.
+
+```json
+{
+  "description": "A transcript that loses sentence openings, so their onsets must be interpolated rather than measured. Without this case the gate reports zero error while never testing interpolation at all.",
+  "reference": "reference.txt",
+  "spoken": "reference.txt",
+  "expectedGranularity": "SENTENCE",
+  "seed": 2,
+  "baseMs": 120,
+  "perCharacterMs": 45,
+  "gapMs": 40,
+  "preamble": [],
+  "dropRate": 0.2,
   "substituteRate": 0.04
 }
 ```
@@ -2351,7 +2383,7 @@ Juniper lacquer festooned every obsidian trellis, and vermilion kestrels quarrel
 for case in test-fixtures/alignment/cases/*/; do python3 benchmarks/alignment/make_fixture.py "$case"; done
 ```
 
-Expected: five lines, each naming a case with a token count and an onset count. The reference holds five sentences, so `clean-narration`, `narrator-preamble`, and `asr-dropouts` report 5 onsets each; `partial-narration` and `wrong-edition` report 0, because a narration of different text has no true onsets in this book.
+Expected: six lines, each naming a case with a token count and an onset count. The reference holds five sentences, so `clean-narration`, `narrator-preamble`, `asr-dropouts`, and `interpolated-openings` report 5 onsets each; `partial-narration` and `wrong-edition` report 0, because a narration of different text has no true onsets in this book.
 
 - [ ] **Step 4: Write the gate**
 
@@ -2539,13 +2571,13 @@ Run: `python3 -m unittest discover -s benchmarks/alignment/tests`
 Expected: `OK`, 16 tests.
 
 Run: `python3 benchmarks/alignment/validate_fixture.py`
-Expected: `checked 5 alignment fixture cases`, exit status 0.
+Expected: `checked 6 alignment fixture cases`, exit status 0.
 
 - [ ] **Step 9: Commit**
 
 ```bash
 git add benchmarks/alignment test-fixtures/alignment
-git commit -m "test(align): add the five alignment fixture cases and their validator"
+git commit -m "test(align): add the six alignment fixture cases and their validator"
 ```
 
 ---
@@ -2723,7 +2755,7 @@ The assertion messages print per-case granularity and matched ratio. Work throug
 2. **`narrator-preamble` fails while `clean-narration` passes.** The preamble is shifting the result, which means something is anchoring on position rather than content.
 3. **`wrong-edition` is anything other than `NONE`.** Thresholds in `AlignmentOptions` are letting a non-match through. That is the most serious possible failure of this feature and outranks every other number here.
 
-Only if all five cases are behaving and the *distribution* is wider than the gate is the threshold itself the question — and then record the new number and the reason in `benchmarks/alignment/README.md`, in the same commit.
+Only if all six cases are behaving and the *distribution* is wider than the gate is the threshold itself the question — and then record the new number and the reason in `benchmarks/alignment/README.md`, in the same commit.
 
 - [ ] **Step 4: Commit**
 
@@ -3005,6 +3037,11 @@ python3 benchmarks/alignment/validate_fixture.py
 
 ## The thresholds
 
+A note on the error thresholds. Only `interpolated-openings` exercises the interpolation path;
+in every other case each measured onset lands on a matched token and inherits the recognizer's
+exact time, so it contributes a zero. The median is therefore dominated by zeros and it is the p95
+that carries real information about interpolation quality. Read them that way.
+
 `test-fixtures/alignment/gate.json` holds the gate. `maxFalseSyncOnsets` is the one that matters
 most: it counts places where the aligner claimed word-level accuracy while being more than two
 seconds wrong. It is zero, and it stays zero. A highlight that is visibly lying is worse than no
@@ -3058,7 +3095,7 @@ Run:
 python3 -m unittest discover -s benchmarks/alignment/tests && python3 benchmarks/alignment/validate_fixture.py && ./gradlew check
 ```
 
-Expected: `OK` (22 tests), `checked 5 alignment fixture cases`, `BUILD SUCCESSFUL`.
+Expected: `OK` (22 tests), `checked 6 alignment fixture cases`, `BUILD SUCCESSFUL`.
 
 - [ ] **Step 4: Describe the module in the repository README**
 
@@ -3095,7 +3132,7 @@ Run all of it before reporting completion:
 python3 -m unittest discover -s benchmarks/alignment/tests && python3 benchmarks/alignment/validate_fixture.py && ./gradlew check
 ```
 
-Expected: 22 Python tests `OK`, `checked 5 alignment fixture cases`, `BUILD SUCCESSFUL`.
+Expected: 22 Python tests `OK`, `checked 6 alignment fixture cases`, `BUILD SUCCESSFUL`.
 
 Report the gate's own numbers, not just that it passed — the assertion message in
 `AlignmentGateTest` prints median error, p95 error, coverage, and false-sync count, and those
