@@ -10,6 +10,7 @@ Narratify is an offline-first ebook and audiobook reader for iOS and Android. Th
 - `shared/data`: SQLDelight library/index schema, portable search cache, managed-file records, and durable visual positions.
 - `shared/playback`: deterministic audiobook/TTS queue state machine and platform-backend contracts.
 - `shared/text`: deterministic sentence segmentation, conservative speech normalization, chunking, and source-preserving spoken-token maps.
+- `shared/align`: deterministic anchor-and-fill alignment between a chapter's text and a transcript of its narration, with confidence-gated granularity that refuses to claim word-level sync it cannot support.
 - `benchmarks`: device acceptance harness for candidate offline TTS engines.
 - `test-fixtures/tts`: versioned multilingual and adversarial benchmark corpus.
 

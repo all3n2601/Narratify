@@ -427,7 +427,7 @@ The hard floor is iPhone 12 and Galaxy A53 6 GB. Also test a small iPhone, curre
 
 After v1, evaluate on-device OCR as a page-aware feature using cached word rectangles and confidence. Evaluate optional encrypted sync only after defining identity, recovery, conflict handling, retention, and privacy operations. Add neural language packs one at a time, with their own model, G2P, timing, license, pronunciation, and device-performance gates.
 
-Exact ebook-to-audiobook alignment should be treated as a separate research project involving edition matching and offline forced alignment. It should not share a delivery milestone with ordinary position persistence.
+Exact ebook-to-audiobook alignment should be treated as a separate research project involving edition matching and offline forced alignment. It should not share a delivery milestone with ordinary position persistence. Its first half is built: `shared/align` holds the deterministic aligner and `benchmarks/alignment` holds a synthetic quality gate, both described in `docs/superpowers/plans/2026-09-14-audiobook-forced-alignment.md`. Two things remain before this can be scheduled as a feature — a real-audio evidence run against annotated LibriVox recordings, and a decision on running a recognizer on device, which carries its own licensing, distribution, and thermal gates.
 
 ## 13. Immediate next actions
 
