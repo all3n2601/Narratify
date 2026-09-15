@@ -41,6 +41,12 @@ class AlignmentKeyTest {
     }
 
     @Test
+    fun `a modifier letter apostrophe is a letter and survives folding`() {
+        assertEquals("donʼt", AlignmentKey.fold("donʼt"))
+        assertNotEquals(AlignmentKey.fold("donʼt"), AlignmentKey.fold("don't"))
+    }
+
+    @Test
     fun `a mark at the edge of a token is punctuation rather than part of the word`() {
         assertEquals("tis", AlignmentKey.fold("'tis"))
         assertEquals("readers", AlignmentKey.fold("readers'"))

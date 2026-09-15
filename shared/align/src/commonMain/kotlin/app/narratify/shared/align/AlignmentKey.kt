@@ -6,16 +6,20 @@ package app.narratify.shared.align
  * Folding is deliberately lossy and deliberately cheap: it runs once over every token of a book
  * and once over every token of its narration, so anything clever here is paid for a hundred
  * thousand times. A mark between two letters is kept and canonicalised, so a typesetter's "don’t"
- * and a transcriber's "don't" agree. The set is the one `shared/text`'s lexer already treats as
- * word-internal — apostrophe, hyphen, period — because deleting any of them collapses two real
- * words onto one key: "we'll" onto "well", "re-form" onto "reform", "U.S" onto "us". That costs
- * matches, since a recognizer rarely writes the hyphen the page does. It is the right trade here:
- * a missed match lowers the granularity the result may claim, while a collision puts a confident
- * highlight on the wrong second.
+ * and a transcriber's "don't" agree. The set is exactly the one `shared/text`'s lexer treats as
+ * word-internal — apostrophe, right single quote, hyphen, period — because deleting any of them
+ * collapses two real words onto one key: "we'll" onto "well", "re-form" onto "reform", "U.S" onto
+ * "us". That costs matches, since a recognizer rarely writes the hyphen the page does. It is the
+ * right trade here: a missed match lowers the granularity the result may claim, while a collision
+ * puts a confident highlight on the wrong second.
  *
  * Both sides are canonically composed first, so a precomposed "café" and a decomposed one fold to
  * the same key. Note this composes rather than strips: "café" and "cafe" remain different words,
  * which is correct — a narrator who says one did not say the other.
+ *
+ * U+02BC MODIFIER LETTER APOSTROPHE is deliberately absent. Unicode classifies it as a letter, the
+ * lexer keeps it as one, and in Uzbek and several romanizations it is a letter rather than
+ * punctuation. Folding it to an apostrophe would erase a real distinction in those languages.
  */
 object AlignmentKey {
     /**
@@ -24,7 +28,7 @@ object AlignmentKey {
      * word ends.
      */
     private val WORD_INTERNAL_MARKS = mapOf(
-        '\'' to '\'', '’' to '\'', 'ʼ' to '\'',
+        '\'' to '\'', '’' to '\'',
         '-' to '-',
         '.' to '.',
     )
