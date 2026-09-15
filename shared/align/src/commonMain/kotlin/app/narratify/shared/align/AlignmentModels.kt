@@ -26,8 +26,13 @@ data class AsrToken(
 /**
  * How much of the text a granularity is honest about.
  *
- * WORD means the word under the cursor is the word being spoken. SENTENCE means only the
- * sentence is trustworthy. CHAPTER means nothing finer than the chapter was established.
+ * WORD means the share of matched tokens cleared [AlignmentOptions.wordThreshold], so following
+ * the highlight word by word is reasonable. It is a claim about the span, not about every token
+ * in it: at the default threshold up to about one word in seven may still be interpolated, and
+ * [TokenTiming.matched] is the only thing that says which. That flag is not persisted, so a
+ * caller reading a stored map can see how much of a span was measured but not precisely where.
+ * SENTENCE means only the sentence is trustworthy. CHAPTER means nothing finer than the chapter
+ * was established.
  * NONE means the narration and the text did not agree enough to claim anything, which is the
  * correct answer for an abridgement, a different translation, or the wrong book.
  */

@@ -94,9 +94,12 @@ object ForcedAligner {
     }
 
     /**
-     * Groups tokens back into the TTS chunks they came from. Those chunks are already
-     * sentence-shaped, which is the unit a reader can be moved to without landing mid-clause,
-     * and their tokens are contiguous, so one scan is enough.
+     * Groups tokens back into the TTS chunks they came from, because their tokens are contiguous
+     * so one scan is enough, and because sharing the unit with TTS keeps the two highlighters
+     * consistent. A chunk approximates a sentence but is not one: `TtsTextPreparer` fuses
+     * adjacent short sentences and splits long ones at a semicolon, comma, or failing that a
+     * space. So a span can cover several sentences or end mid-clause, and a SENTENCE-granularity
+     * claim is really a claim about this chunk.
      */
     private fun spans(
         bookTokens: List<BookToken>,

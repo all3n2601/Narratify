@@ -623,8 +623,13 @@ data class AsrToken(
 /**
  * How much of the text a granularity is honest about.
  *
- * WORD means the word under the cursor is the word being spoken. SENTENCE means only the
- * sentence is trustworthy. CHAPTER means nothing finer than the chapter was established.
+ * WORD means the share of matched tokens cleared [AlignmentOptions.wordThreshold], so following
+ * the highlight word by word is reasonable. It is a claim about the span, not about every token
+ * in it: at the default threshold up to about one word in seven may still be interpolated, and
+ * [TokenTiming.matched] is the only thing that says which. That flag is not persisted, so a
+ * caller reading a stored map can see how much of a span was measured but not precisely where.
+ * SENTENCE means only the sentence is trustworthy. CHAPTER means nothing finer than the chapter
+ * was established.
  * NONE means the narration and the text did not agree enough to claim anything, which is the
  * correct answer for an abridgement, a different translation, or the wrong book.
  */
@@ -1701,9 +1706,12 @@ object ForcedAligner {
     }
 
     /**
-     * Groups tokens back into the TTS chunks they came from. Those chunks are already
-     * sentence-shaped, which is the unit a reader can be moved to without landing mid-clause,
-     * and their tokens are contiguous, so one scan is enough.
+     * Groups tokens back into the TTS chunks they came from, because their tokens are contiguous
+     * so one scan is enough, and because sharing the unit with TTS keeps the two highlighters
+     * consistent. A chunk approximates a sentence but is not one: `TtsTextPreparer` fuses
+     * adjacent short sentences and splits long ones at a semicolon, comma, or failing that a
+     * space. So a span can cover several sentences or end mid-clause, and a SENTENCE-granularity
+     * claim is really a claim about this chunk.
      */
     private fun spans(
         bookTokens: List<BookToken>,

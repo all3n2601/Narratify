@@ -35,7 +35,8 @@ jobs:
             --device-id ci \
             --output benchmarks/tts/results/mock-ci.json
           python3 benchmarks/tts/validate_result.py benchmarks/tts/results/mock-ci.json
-      - name: Verify the alignment gate
+      - name: Verify the alignment fixtures and gate
         run: |
           python3 -m unittest discover -s benchmarks/alignment/tests
           python3 benchmarks/alignment/validate_fixture.py
+          ./gradlew :shared:align:jvmTest --tests "app.narratify.shared.align.AlignmentGateTest"
