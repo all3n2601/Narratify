@@ -58,6 +58,21 @@ class AlignmentModelsTest {
     }
 
     @Test
+    fun `a map refuses an audio window nested inside the one before it`() {
+        // Both spans start in order, so checking starts alone lets this through. Playing it would
+        // run the highlight forward through the book while the audio jumped from 9s back to 2s.
+        assertFailsWith<IllegalArgumentException> {
+            AlignmentMap(
+                publicationId = PublicationId("p"),
+                mediaItemId = MediaItemId("m"),
+                resourceId = ResourceId("r"),
+                granularity = AlignmentGranularity.WORD,
+                spans = listOf(span(0, 4, 1000, 9000), span(4, 8, 2000, 3000)),
+            )
+        }
+    }
+
+    @Test
     fun `granularity falls with the share of the text that was actually matched`() {
         val options = AlignmentOptions()
         assertEquals(AlignmentGranularity.WORD, options.granularityFor(0.97))

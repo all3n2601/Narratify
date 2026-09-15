@@ -82,7 +82,9 @@ data class AlignmentMap(
         require(schemaVersion > 0) { "Schema version must be positive" }
         require(
             spans.zipWithNext().all { (earlier, later) ->
-                earlier.bookTokenEndExclusive <= later.bookTokenStart && earlier.startMs <= later.startMs
+                earlier.bookTokenEndExclusive <= later.bookTokenStart &&
+                    earlier.startMs <= later.startMs &&
+                    earlier.endMs <= later.endMs
             },
         ) { "Spans must move forward in both the book and the audio" }
     }
