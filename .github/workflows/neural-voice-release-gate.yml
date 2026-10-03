@@ -17,9 +17,10 @@ jobs:
           java-version: "17"
       - uses: android-actions/setup-android@v3
         with:
+          cmdline-tools-version: '16111833'
           packages: platform-tools
       - name: Install Android SDK used by the app
-        run: sdkmanager "platforms;android-37" "build-tools;36.0.0"
+        run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0"
       - uses: gradle/actions/setup-gradle@v4
       - name: Require complete commercial approval
         run: python3 benchmarks/tts/validate_license_inventory.py benchmarks/tts/license-inventory.pending.json --require-approved

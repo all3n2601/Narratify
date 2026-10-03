@@ -68,7 +68,7 @@ These are actual development captures using local test books. They show the iOS 
 | Tool | Needed for |
 | --- | --- |
 | JDK 17 or later | Gradle and Android/shared builds |
-| Android SDK Platform 37 and Build Tools 36.0.0 | Android compilation |
+| Android SDK Platform 37.0, Build Tools 36.0.0, and Command-line Tools 23.0+ | Android compilation |
 | Android device or emulator running API 26+ | Running the Android app |
 | macOS with Xcode and an installed iOS simulator | Building and testing the iOS app |
 | [XcodeGen](https://github.com/yonaskolb/XcodeGen) | Regenerating the iOS project from `project.yml` |
