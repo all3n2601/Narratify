@@ -56,6 +56,9 @@ targets:
       - path: ../test-fixtures/outline
         type: folder
         buildPhase: resources
+      - path: ../test-fixtures/epub
+        type: folder
+        buildPhase: resources
     dependencies:
       - target: Narratify
     settings:

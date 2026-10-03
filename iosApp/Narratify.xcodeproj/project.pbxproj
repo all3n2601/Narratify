@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		026397F86AC5A476864996F0 /* epub in Resources */ = {isa = PBXBuildFile; fileRef = FF5B4617B88BA57B5E897676 /* epub */; };
 		0491A7B9B2D48F28C1898B4F /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E678CD6A7F4DB500E8E711A4 /* AppSettings.swift */; };
 		0700D446E288700901A25683 /* SpeechRuntimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A802624A71FC561457325E /* SpeechRuntimeTests.swift */; };
 		0DAB2E684A59147E9BF3F477 /* AppSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162CD08519ADDFD4F1E86E26 /* AppSettingsTests.swift */; };
@@ -74,6 +75,7 @@
 		E678CD6A7F4DB500E8E711A4 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		F7D8E2B7024126C1A0E92AF3 /* Narratify.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Narratify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD94D6FC3CCE3224D7BE951C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FF5B4617B88BA57B5E897676 /* epub */ = {isa = PBXFileReference; lastKnownFileType = folder; name = epub; path = "../test-fixtures/epub"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +143,7 @@
 		68EE5C84F6A260A5154904A7 /* test-fixtures */ = {
 			isa = PBXGroup;
 			children = (
+				FF5B4617B88BA57B5E897676 /* epub */,
 				138B056DAC8DC0C872C4882E /* outline */,
 			);
 			path = "test-fixtures";
@@ -253,6 +256,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				026397F86AC5A476864996F0 /* epub in Resources */,
 				2B854D3E1CD5B483E1F44515 /* outline in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

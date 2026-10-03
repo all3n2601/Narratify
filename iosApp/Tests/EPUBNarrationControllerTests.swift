@@ -5,15 +5,12 @@ import XCTest
 final class EPUBNarrationControllerTests: XCTestCase {
     @MainActor
     func testEPUBNarrationStartsAndPausesWithSystemVoice() async throws {
-        let iosRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-        let fixture = iosRoot.appendingPathComponent(
-            "build/SourcePackages/checkouts/swift-toolkit/Tests/Publications/Publications/childrens-literature.epub"
+        let fixture = try XCTUnwrap(
+            Bundle(for: Self.self).url(
+                forResource: "narratify-smoke", withExtension: "epub", subdirectory: "epub"
+            ),
+            "EPUB smoke fixture is not bundled with the test target"
         )
-        guard FileManager.default.fileExists(atPath: fixture.path) else {
-            throw XCTSkip("Readium package fixture is unavailable until dependencies are resolved")
-        }
 
         let root = FileManager.default.temporaryDirectory
             .appendingPathComponent("NarratifyNarrationTests-\(UUID().uuidString)", isDirectory: true)

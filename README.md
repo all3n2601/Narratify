@@ -116,7 +116,7 @@ Physical-device builds require your own signing team. The iOS app currently buil
 
 ### Try it out
 
-1. Open **Library**, tap **+**, and import an unencrypted EPUB, TXT, or Markdown file. For a quick text-reading check, import a [`reference.txt` fixture](test-fixtures/alignment/cases/clean-narration/reference.txt).
+1. Open **Library**, tap **+**, and import an unencrypted EPUB, TXT, or Markdown file. For a quick reading check, import the [sample EPUB](test-fixtures/epub/narratify-smoke.epub) or a [`reference.txt` fixture](test-fixtures/alignment/cases/clean-narration/reference.txt).
 2. Open the book and use the reader's playback controls to start read-aloud. Install an offline system voice in your device settings if needed.
 3. Open **Discover**, search by title or author, and use **Add EPUB** on a supported public download.
 4. On Android, import an MP3, M4A, or M4B for audiobook playback, or use a book's narration actions to attach a recording and review its chapter mapping.
@@ -166,7 +166,7 @@ shared/
   text/                Segmentation, normalization and source-preserving token maps
   align/               Anchor-and-fill alignment and EPUB media-overlay generation
 benchmarks/            Offline TTS and audiobook-alignment evaluation tooling
-test-fixtures/         Media, outline, alignment and multilingual TTS fixtures
+test-fixtures/         EPUB, media, outline, alignment and multilingual TTS fixtures
 docs/                  Design decisions, execution plans and dependency records
 assets/brand/          Narratify artwork
 ```
