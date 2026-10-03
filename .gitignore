@@ -13,3 +13,11 @@ benchmarks/results/
 benchmarks/models/
 test-fixtures/tts/audio/
 .kotlin/
+.claude/
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
