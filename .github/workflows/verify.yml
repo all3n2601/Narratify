@@ -1,6 +1,7 @@
 name: Verify foundation
 
 on:
+  workflow_call:
   pull_request:
   push:
     branches: [main]
@@ -27,6 +28,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Verify shared contracts and database generation
         run: ./gradlew check :androidApp:assembleDebug :shared:domain:compileAndroidMain :shared:data:compileAndroidMain
+      - name: Verify release metadata rules
+        run: python3 -m unittest discover -s scripts/tests
       - name: Verify the TTS benchmark contract
         run: |
           python3 -m unittest discover -s benchmarks/tts/tests

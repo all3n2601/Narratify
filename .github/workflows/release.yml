@@ -1,0 +1,254 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to validate (no release is published)'
+        required: true
+        default: '0.1.0-dev'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_code: ${{ steps.version.outputs.version_code }}
+      tag: ${{ steps.version.outputs.tag }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+      publish: ${{ steps.version.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate version and release source
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          args=()
+          version="$INPUT_VERSION"
+          if [[ "$GITHUB_EVENT_NAME" == 'push' ]]; then
+            [[ "$GITHUB_REF" == refs/tags/v* ]]
+            git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+            version="${GITHUB_REF_NAME#v}"
+            args+=(--publish)
+          fi
+          python3 scripts/release_metadata.py --version "$version" \
+            --run-number "$GITHUB_RUN_NUMBER" --github-output "$GITHUB_OUTPUT" "${args[@]}"
+
+  verify:
+    uses: ./.github/workflows/verify.yml
+
+  android:
+    needs: [metadata, verify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      RELEASE_VERSION: ${{ needs.metadata.outputs.version }}
+      RELEASE_VERSION_CODE: ${{ needs.metadata.outputs.version_code }}
+      PUBLISH: ${{ needs.metadata.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: '16111833'
+          packages: platform-tools
+      - name: Install Android SDK
+        run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Require recorded neural distribution approval
+        run: python3 benchmarks/tts/validate_license_inventory.py benchmarks/tts/license-inventory.pending.json --require-approved
+      - name: Prepare release signing
+        id: signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [[ -n "$KEYSTORE_BASE64" && -n "$ANDROID_KEYSTORE_PASSWORD" && -n "$ANDROID_KEY_ALIAS" && -n "$ANDROID_KEY_PASSWORD" ]]; then
+            umask 077
+            printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/narratify-release.jks"
+            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/narratify-release.jks" >> "$GITHUB_ENV"
+            echo 'signed=true' >> "$GITHUB_OUTPUT"
+          elif [[ "$PUBLISH" == 'true' ]]; then
+            echo '::error::Tag releases require ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, and ANDROID_KEY_PASSWORD repository secrets.'
+            exit 1
+          elif [[ -n "$KEYSTORE_BASE64$ANDROID_KEYSTORE_PASSWORD$ANDROID_KEY_ALIAS$ANDROID_KEY_PASSWORD" ]]; then
+            echo '::error::Signing secrets are incomplete. Supply all four or remove them for unsigned validation.'
+            exit 1
+          else
+            echo 'signed=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build release APK and app bundle
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          ./gradlew --no-configuration-cache :androidApp:lintRelease \
+            :androidApp:assembleRelease :androidApp:bundleRelease \
+            -PreleaseVersion="$RELEASE_VERSION" -PreleaseVersionCode="$RELEASE_VERSION_CODE"
+      - name: Package and verify Android artifacts
+        env:
+          SIGNED: ${{ steps.signing.outputs.signed }}
+        run: |
+          mkdir -p release-assets
+          if [[ "$SIGNED" == 'true' ]]; then
+            "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose androidApp/build/outputs/apk/release/androidApp-release.apk
+            cp androidApp/build/outputs/apk/release/androidApp-release.apk "release-assets/Narratify-$RELEASE_VERSION-android.apk"
+            cp androidApp/build/outputs/bundle/release/androidApp-release.aab "release-assets/Narratify-$RELEASE_VERSION-android.aab"
+          else
+            cp androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk "release-assets/Narratify-$RELEASE_VERSION-android-unsigned.apk"
+            cp androidApp/build/outputs/bundle/release/androidApp-release.aab "release-assets/Narratify-$RELEASE_VERSION-android-unsigned.aab"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: release-assets/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Remove temporary signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/narratify-release.jks"
+
+  ios:
+    needs: metadata
+    runs-on: macos-latest
+    timeout-minutes: 35
+    env:
+      RELEASE_VERSION: ${{ needs.metadata.outputs.version }}
+      RELEASE_VERSION_CODE: ${{ needs.metadata.outputs.version_code }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate native project
+        working-directory: iosApp
+        run: |
+          command -v xcodegen || brew install xcodegen
+          xcodegen generate
+      - name: Choose an installed iPhone simulator
+        run: |
+          xcrun simctl list devices available --json > "$RUNNER_TEMP/simulators.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          devices = json.loads((Path(os.environ['RUNNER_TEMP']) / 'simulators.json').read_text())['devices']
+          iphones = [device for runtime, group in devices.items() if '.iOS-' in runtime
+                     for device in group if device['name'].startswith('iPhone') and device.get('isAvailable', True)]
+          if not iphones:
+              raise SystemExit('No available iPhone simulator found on this runner.')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write(f"IOS_SIMULATOR_ID={iphones[0]['udid']}\n")
+          PY
+      - name: Test native iOS app
+        working-directory: iosApp
+        run: |
+          xcodebuild -quiet -project Narratify.xcodeproj -scheme Narratify \
+            -sdk iphonesimulator -destination "platform=iOS Simulator,id=$IOS_SIMULATOR_ID" \
+            -derivedDataPath "$RUNNER_TEMP/NarratifyDerivedData" \
+            -resultBundlePath "$RUNNER_TEMP/NarratifyTests.xcresult" \
+            test CODE_SIGNING_ALLOWED=NO
+      - name: Build simulator release bundle
+        working-directory: iosApp
+        run: |
+          xcodebuild -quiet -project Narratify.xcodeproj -scheme Narratify \
+            -configuration Release -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/NarratifyDerivedData" \
+            build CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO \
+            MARKETING_VERSION="${RELEASE_VERSION%%-*}" CURRENT_PROJECT_VERSION="$RELEASE_VERSION_CODE"
+          mkdir -p ../release-assets
+          ditto -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/NarratifyDerivedData/Build/Products/Release-iphonesimulator/Narratify.app" \
+            "../release-assets/Narratify-$RELEASE_VERSION-ios-simulator.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-ios
+          path: release-assets/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Save iOS test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: ${{ runner.temp }}/NarratifyTests.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
+
+  publish:
+    needs: [metadata, verify, android, ios]
+    if: needs.metadata.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ needs.metadata.outputs.tag }}
+      PRERELEASE: ${{ needs.metadata.outputs.prerelease }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: release-assets
+      - name: Write checksums and release notes
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          root = Path('release-assets')
+          files = sorted(root.iterdir())
+          if len(files) != 3 or not any(p.suffix == '.apk' for p in files) or not any(p.suffix == '.aab' for p in files) or not any(p.suffix == '.zip' for p in files):
+              raise SystemExit('Expected one signed Android APK, one AAB, and one iOS simulator ZIP.')
+          if any('unsigned' in p.name for p in files):
+              raise SystemExit('Unsigned validation artifacts cannot be published.')
+          with (root / 'SHA256SUMS.txt').open('w') as output:
+              for path in files:
+                  with path.open('rb') as data:
+                      digest = hashlib.file_digest(data, 'sha256').hexdigest()
+                  output.write(f'{digest}  {path.name}\n')
+          PY
+          cat > release-body.md <<'NOTES'
+          Android: install the signed APK directly, or use the AAB for Play distribution. This is a development project; see the README for feature coverage and remaining device acceptance work.
+
+          iOS: the ZIP contains a simulator app for developers. It cannot be installed on an iPhone or iPad; device and App Store distribution require separate Apple signing setup.
+
+          SHA256SUMS.txt contains checksums for all three downloads. Source versions and dependency approvals are recorded in the tagged repository.
+          NOTES
+      - name: Publish verified release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          preview_args=()
+          latest=true
+          if [[ "$PRERELEASE" == 'true' ]]; then
+            preview_args+=(--prerelease)
+            latest=false
+          fi
+          if draft=$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft 2>/dev/null); then
+            if [[ "$draft" != 'true' ]]; then
+              echo '::error::This version is already published. Use a new tag instead of replacing public release files.'
+              exit 1
+            fi
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --draft --generate-notes \
+              --title "Narratify $RELEASE_TAG" --notes-file release-body.md "${preview_args[@]}"
+          fi
+          gh release upload "$RELEASE_TAG" release-assets/* --clobber
+          gh release edit "$RELEASE_TAG" --draft=false --latest="$latest"

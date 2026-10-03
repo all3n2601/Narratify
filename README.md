@@ -154,7 +154,16 @@ python3 benchmarks/tts/validate_license_inventory.py \
 
 The [verification workflow](.github/workflows/verify.yml) checks Android/shared contracts, database migrations, the TTS benchmark contract, and alignment fixtures. The manually triggered [neural voice release gate](.github/workflows/neural-voice-release-gate.yml) separately enforces the recorded distribution approval. Benchmark mocks verify the tooling; they do not establish real-device speech quality or thermal performance.
 
+## Releases
+
+The [Release workflow](.github/workflows/release.yml) publishes signed Android APK/AAB files, an iOS simulator bundle, generated release notes, and SHA-256 checksums when a version tag such as `v0.1.0` is pushed. All verification and native iOS tests must pass first. Preview tags such as `v0.1.0-rc.1` become prereleases.
+
+Manual workflow runs build and test artifacts without publishing. Android tag releases require the four signing secrets described in the [release guide](docs/RELEASING.md). The iOS download is for simulators; physical-device and app-store distribution require Apple signing setup.
+
+See [GitHub Releases](https://github.com/all3n2601/Narratify/releases) for published versions and the [release guide](docs/RELEASING.md) for setup, validation, and tagging instructions.
+
 ## Project structure
+
 
 ```text
 androidApp/            Native Kotlin Android app, Readium, Media3, Kokoro/ONNX

@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+val releaseVersion = providers.gradleProperty("releaseVersion").orElse("0.1.0-dev")
+val releaseVersionCode = providers.gradleProperty("releaseVersionCode").orElse("1")
+val releaseKeystore = providers.environmentVariable("ANDROID_KEYSTORE_PATH")
+
 android {
     namespace = "app.narratify"
     compileSdk = 37
@@ -10,8 +14,22 @@ android {
         applicationId = "app.narratify"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0-dev"
+        versionCode = releaseVersionCode.get().toInt().also {
+            require(it in 1..2_100_000_000) { "releaseVersionCode must be between 1 and 2100000000" }
+        }
+        versionName = releaseVersion.get()
+    }
+
+    if (releaseKeystore.isPresent) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(releaseKeystore.get())
+                storePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").get()
+                keyAlias = providers.environmentVariable("ANDROID_KEY_ALIAS").get()
+                keyPassword = providers.environmentVariable("ANDROID_KEY_PASSWORD").get()
+            }
+        }
+        buildTypes.getByName("release").signingConfig = signingConfigs.getByName("release")
     }
 
     buildFeatures {
