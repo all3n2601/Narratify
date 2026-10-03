@@ -22,6 +22,8 @@ targets:
       path: Sources/Info.plist
       properties:
         CFBundleDisplayName: Narratify
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSApplicationCategoryType: public.app-category.books
         UIApplicationSupportsIndirectInputEvents: true
         UILaunchScreen:

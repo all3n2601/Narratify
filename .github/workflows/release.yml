@@ -117,6 +117,15 @@ jobs:
             cp androidApp/build/outputs/apk/release/androidApp-release-unsigned.apk "release-assets/Narratify-$RELEASE_VERSION-android-unsigned.apk"
             cp androidApp/build/outputs/bundle/release/androidApp-release.aab "release-assets/Narratify-$RELEASE_VERSION-android-unsigned.aab"
           fi
+          apk=$(find release-assets -name '*.apk' -print -quit)
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$apk" > "$RUNNER_TEMP/android-badging.txt"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          package = (Path(os.environ['RUNNER_TEMP']) / 'android-badging.txt').read_text().splitlines()[0]
+          assert f"versionName='{os.environ['RELEASE_VERSION']}'" in package, 'APK version name differs from requested version'
+          assert f"versionCode='{os.environ['RELEASE_VERSION_CODE']}'" in package, 'APK version code differs from build number'
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: release-android
@@ -172,6 +181,15 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/NarratifyDerivedData" \
             build CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO \
             MARKETING_VERSION="${RELEASE_VERSION%%-*}" CURRENT_PROJECT_VERSION="$RELEASE_VERSION_CODE"
+          python3 - <<'PY'
+          import os, plistlib
+          from pathlib import Path
+          app = Path(os.environ['RUNNER_TEMP']) / 'NarratifyDerivedData/Build/Products/Release-iphonesimulator/Narratify.app'
+          with (app / 'Info.plist').open('rb') as source:
+              info = plistlib.load(source)
+          assert info['CFBundleShortVersionString'] == os.environ['RELEASE_VERSION'].split('-')[0], 'iOS marketing version differs from requested version'
+          assert info['CFBundleVersion'] == os.environ['RELEASE_VERSION_CODE'], 'iOS build number differs from requested version'
+          PY
           mkdir -p ../release-assets
           ditto -c -k --sequesterRsrc --keepParent \
             "$RUNNER_TEMP/NarratifyDerivedData/Build/Products/Release-iphonesimulator/Narratify.app" \
