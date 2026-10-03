@@ -21,7 +21,6 @@ struct AppRootScreen: View {
             }
         }
         .background(Backdrop().ignoresSafeArea())
-        .animation(.easeInOut(duration: 0.18), value: section)
     }
 
     @ViewBuilder private var destination: some View {

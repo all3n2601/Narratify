@@ -36,4 +36,26 @@ final class BookCatalogTests: XCTestCase {
     func testProviderWithoutItemsReturnsEmptyList() throws {
         XCTAssertTrue(try CatalogParsers.googleBooks(Data(#"{"totalItems":0}"#.utf8)).isEmpty)
     }
+
+    func testMergeRanksExactAndPartialTitleMatchesAheadOfUnrelatedResults() {
+        let unrelated = CatalogBook(
+            id: "archive:1", title: "Alien Art", author: "Gordon Dickson",
+            sources: "Internet Archive", detailURL: URL(string: "https://archive.org/1")!,
+            coverURL: nil, epubURL: nil, note: nil
+        )
+        let partial = CatalogBook(
+            id: "open:2", title: "Cleopatra and Frankenstein", author: "Coco Mellors",
+            sources: "Open Library", detailURL: URL(string: "https://openlibrary.org/2")!,
+            coverURL: nil, epubURL: nil, note: nil
+        )
+        let exact = CatalogBook(
+            id: "open:3", title: "Frankenstein", author: "Mary Shelley",
+            sources: "Open Library", detailURL: URL(string: "https://openlibrary.org/3")!,
+            coverURL: nil, epubURL: nil, note: nil
+        )
+
+        let merged = CatalogParsers.merge([[unrelated, partial, exact]], matching: "Frankenstein")
+
+        XCTAssertEqual(merged.map(\.id), [exact.id, partial.id, unrelated.id])
+    }
 }

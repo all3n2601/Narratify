@@ -193,7 +193,7 @@ enum CatalogParsers {
         }
     }
 
-    static func merge(_ groups: [[CatalogBook]]) -> [CatalogBook] {
+    static func merge(_ groups: [[CatalogBook]], matching query: String? = nil) -> [CatalogBook] {
         var merged: [String: CatalogBook] = [:]
         for candidate in groups.flatMap({ $0 }) {
             let key = normalize(candidate.title) + "|" + normalize(candidate.author)
@@ -208,10 +208,26 @@ enum CatalogParsers {
                 merged[key] = candidate
             }
         }
+        let normalizedQuery = query.map(normalize)?.nilIfEmpty
         return merged.values.sorted {
+            if let normalizedQuery {
+                let leftRank = relevance(of: $0, to: normalizedQuery)
+                let rightRank = relevance(of: $1, to: normalizedQuery)
+                if leftRank != rightRank { return leftRank < rightRank }
+            }
             if ($0.epubURL != nil) != ($1.epubURL != nil) { return $0.epubURL != nil }
             return $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
         }
+    }
+
+    private static func relevance(of book: CatalogBook, to normalizedQuery: String) -> Int {
+        let title = normalize(book.title)
+        let author = normalize(book.author)
+        if title == normalizedQuery { return 0 }
+        if title.hasPrefix(normalizedQuery) { return 1 }
+        if title.contains(normalizedQuery) { return 2 }
+        if author.contains(normalizedQuery) { return 3 }
+        return 4
     }
 
     private static func dictionary(_ data: Data) throws -> [String: Any] {
@@ -259,7 +275,10 @@ enum BookCatalogService {
                 case .failure: failures += 1
                 }
             }
-            return CatalogSearchResult(books: CatalogParsers.merge(successful), failedProviderCount: failures)
+            return CatalogSearchResult(
+                books: CatalogParsers.merge(successful, matching: query),
+                failedProviderCount: failures
+            )
         }
     }
 }

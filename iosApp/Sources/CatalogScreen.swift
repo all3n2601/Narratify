@@ -9,6 +9,8 @@ struct CatalogScreen: View {
     @State private var importingID: String?
     @State private var status = "Search across five open book catalogs."
     @State private var errorMessage: String?
+    @State private var searchTask: Task<Void, Never>?
+    @FocusState private var searchFieldFocused: Bool
 
     var body: some View {
         ScrollView {
@@ -38,6 +40,14 @@ struct CatalogScreen: View {
         }
         .scrollIndicators(.hidden)
         .background(Backdrop().ignoresSafeArea())
+        .onDisappear {
+            searchTask?.cancel()
+            searchTask = nil
+            if isSearching {
+                isSearching = false
+                status = "Search cancelled. Try another search."
+            }
+        }
         .alert("Couldn’t add that book", isPresented: Binding(
             get: { errorMessage != nil },
             set: { if !$0 { errorMessage = nil } }
@@ -53,6 +63,7 @@ struct CatalogScreen: View {
             TextField("Title or author", text: $query)
                 .textFieldStyle(.roundedBorder)
                 .submitLabel(.search)
+                .focused($searchFieldFocused)
                 .onSubmit(search)
             Button("Search", action: search)
                 .buttonStyle(.borderedProminent)
@@ -66,10 +77,12 @@ struct CatalogScreen: View {
             status = "Enter at least two characters."
             return
         }
+        searchTask?.cancel()
+        searchFieldFocused = false
         isSearching = true
         books = []
         status = "Searching catalogs…"
-        Task {
+        searchTask = Task {
             let result = await BookCatalogService.search(searchQuery)
             guard !Task.isCancelled else { return }
             books = result.books
@@ -83,6 +96,7 @@ struct CatalogScreen: View {
             } else {
                 status = "\(result.books.count) combined results"
             }
+            searchTask = nil
         }
     }
 

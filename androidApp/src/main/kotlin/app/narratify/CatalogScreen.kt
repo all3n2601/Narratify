@@ -7,6 +7,7 @@ import android.net.Uri
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -28,6 +29,7 @@ class CatalogScreen(
         visibility = GONE
         indeterminateTintList = android.content.res.ColorStateList.valueOf(palette.accent)
     }
+    private var searchGeneration = 0
     private val search = EditText(context).apply {
         hint = "Title or author"
         setSingleLine(true)
@@ -69,6 +71,7 @@ class CatalogScreen(
     }
 
     fun release() {
+        searchGeneration++
         service.close()
         coverLoader.close()
     }
@@ -82,8 +85,13 @@ class CatalogScreen(
         spinner.visibility = VISIBLE
         status.text = "Searching catalogs…"
         results.removeAllViews()
+        val generation = ++searchGeneration
+        search.clearFocus()
+        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
+            ?.hideSoftInputFromWindow(search.windowToken, 0)
         service.search(query) { books, failures ->
             post {
+                if (generation != searchGeneration) return@post
                 spinner.visibility = GONE
                 status.text = when {
                     books.isEmpty() -> "No results. ${if (failures > 0) "$failures sources were unavailable." else "Try another search."}"

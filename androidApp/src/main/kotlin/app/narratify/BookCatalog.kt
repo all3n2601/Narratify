@@ -129,7 +129,7 @@ internal object CatalogParsers {
         }
     }
 
-    fun merge(groups: List<List<CatalogBook>>): List<CatalogBook> {
+    fun merge(groups: List<List<CatalogBook>>, query: String? = null): List<CatalogBook> {
         val merged = linkedMapOf<String, CatalogBook>()
         groups.flatten().forEach { candidate ->
             val key = normalize(candidate.title) + "|" + normalize(candidate.author)
@@ -144,7 +144,25 @@ internal object CatalogParsers {
                 )
             }
         }
-        return merged.values.sortedWith(compareByDescending<CatalogBook> { it.epubUrl != null }.thenBy { it.title.lowercase(Locale.ROOT) })
+        val normalizedQuery = query?.let(::normalize)?.takeIf(String::isNotEmpty)
+        return merged.values.sortedWith(
+            compareBy<CatalogBook> { book ->
+                normalizedQuery?.let { relevance(book, it) } ?: 0
+            }.thenByDescending { it.epubUrl != null }
+                .thenBy { it.title.lowercase(Locale.ROOT) },
+        )
+    }
+
+    private fun relevance(book: CatalogBook, normalizedQuery: String): Int {
+        val title = normalize(book.title)
+        val author = normalize(book.author)
+        return when {
+            title == normalizedQuery -> 0
+            title.startsWith(normalizedQuery) -> 1
+            title.contains(normalizedQuery) -> 2
+            author.contains(normalizedQuery) -> 3
+            else -> 4
+        }
     }
 
     private fun normalize(value: String): String = value.lowercase(Locale.ROOT).filter(Char::isLetterOrDigit)
@@ -172,7 +190,7 @@ class BookCatalogService {
                 if (result.isFailure) failures.incrementAndGet()
                 if (remaining.decrementAndGet() == 0) {
                     val snapshot = synchronized(groups) { groups.toList() }
-                    completion(CatalogParsers.merge(snapshot), failures.get())
+                    completion(CatalogParsers.merge(snapshot, query), failures.get())
                 }
             }
         }

@@ -42,4 +42,15 @@ class BookCatalogTest {
     fun providerWithoutItemsReturnsAnEmptyList() {
         assertTrue(CatalogParsers.googleBooks("""{"totalItems":0}""").isEmpty())
     }
+
+    @Test
+    fun ranksExactAndPartialTitleMatchesAheadOfUnrelatedResults() {
+        val unrelated = CatalogBook("archive:1", "Alien Art", "Gordon Dickson", "Internet Archive", "https://archive.org/1")
+        val partial = CatalogBook("open:2", "Cleopatra and Frankenstein", "Coco Mellors", "Open Library", "https://openlibrary.org/2")
+        val exact = CatalogBook("open:3", "Frankenstein", "Mary Shelley", "Open Library", "https://openlibrary.org/3")
+
+        val merged = CatalogParsers.merge(listOf(listOf(unrelated, partial, exact)), query = "Frankenstein")
+
+        assertEquals(listOf(exact.id, partial.id, unrelated.id), merged.map(CatalogBook::id))
+    }
 }
